@@ -1,7 +1,8 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';3
 import { ShieldCheck, Lightbulb, Users} from 'lucide-react';
 import Nav from '../components/Nav';
+import Dor from '../assets/img/Dors.jpeg'
 
 // Données des valeurs
 const values = [
@@ -31,9 +32,9 @@ const team = [
     bio: "Expert IT et passionné de développement logiciel haute performance."
   },
   {
-    name: "Devon Da Silva",
+    name: "Mme DA SILVA Dorcas",
     role: "Creative Director & UI/UX",
-    img: "https://via.placeholder.com/400x500",
+    img: Dor,
     bio: "Spécialiste en identité visuelle et interfaces numériques immersives."
   }
 ];

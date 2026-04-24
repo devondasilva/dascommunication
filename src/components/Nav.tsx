@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { div } from 'framer-motion/client';
 import logo from '../assets/img/logo_fr.png';
 
 const Nav: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const brandColor = "#8DC63F";
-  const darkColor = "#333333";
 
   // Détecte le scroll pour changer l'apparence du header
   useEffect(() => {

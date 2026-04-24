@@ -5,7 +5,6 @@ import poster from '../assets/img/poster.png';
 
 const Home: React.FC = () => {
   const brandColor = "#8DC63F";
-  const darkColor = "#333333";
 
   return (
     <div className="min-h-screen bg-white">

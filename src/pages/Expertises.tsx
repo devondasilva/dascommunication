@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Code2, PenTool, BarChart3, Smartphone, Globe, Layers } from 'lucide-react';
+import { Code2, PenTool, BarChart3, Smartphone} from 'lucide-react';
 import Nav from '../components/Nav';
 
 const Expertises: React.FC = () => {
