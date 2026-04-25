@@ -7,7 +7,6 @@ const Nav: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false); // État pour le menu mobile
 
   const brandColor = "#8DC63F";
-  const darkColor = "#333333";
 
   useEffect(() => {
     const handleScroll = () => {
