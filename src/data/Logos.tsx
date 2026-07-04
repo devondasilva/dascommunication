@@ -1,5 +1,5 @@
 
-import l1 from '../assets/img/log.svg';
+import l1 from '../assets/img/log_en.png';
 import l2 from '../assets/img/logheri.png';
 import l3 from '../assets/img/logcal.jpg';
 import l4 from '../assets/img/logomades.png';
