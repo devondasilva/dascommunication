@@ -44,11 +44,13 @@ const featuredProjects = [
     tag: 'Next.js & E-Commerce',
     title: 'Aura Premium Odyssée',
     description: 'Refonte de l\'expérience d\'achat cosmétique. +42% de performances de chargement.',
+    link: '/Project'
   },
   {
     tag: 'SaaS Platform',
     title: 'PANAGRO Management',
     description: 'Interface d\'analyses prédictives et suivi d\'investissements agricoles d\'envergure.',
+    link: 'https://panagro.vercel.app/'
   },
   {
     tag: 'Branding & Web',
@@ -106,9 +108,8 @@ const Home: React.FC = () => {
               Studio digital — MD · VA · Bénin
             </p>
             <h1 className="text-4xl md:text-7xl font-black tracking-tighter leading-[0.95] mb-6">
-              DIGITAL <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#27BAA3] to-[#2D3079]">
-                COMPANY.
+                DAS COM
               </span>
             </h1>
             <p className="text-gray-600 text-base md:text-lg max-w-md leading-relaxed">
@@ -209,7 +210,7 @@ const Home: React.FC = () => {
           <div className="flex gap-4 items-start">
             <div className="p-2.5 bg-[#2D3079]/10 text-[#2D3079] rounded-xl"><Lock size={18} /></div>
             <div>
-              <h4 className="text-sm font-black uppercase tracking-tight">Sécurité & Perf</h4>
+              <h4 className="text-sm font-black uppercase tracking-tight">Sécurité & Performance</h4>
               <p className="text-xs text-gray-500 mt-1 leading-relaxed">Architectures durcies conçues pour absorber de forts pics d'audience.</p>
             </div>
           </div>

@@ -29,7 +29,7 @@ const values = [
 // Données de l'équipe enrichies avec des réseaux sociaux
 const team = [
   {
-    name: "Honore Christel De DA SILVA",
+    name: "Mr Devon DA SILVA",
     role: "Founder & Full-Stack Engineer",
     img: "https://via.placeholder.com/400x500", // Remplace par ta photo
     bio: "Architecte logiciel spécialisé dans les écosystèmes modernes (React, Next.js, TypeScript). Il transforme les architectures complexes en interfaces fluides, performantes et sécurisées.",
@@ -39,7 +39,7 @@ const team = [
     }
   },
   {
-    name: "Mme DA SILVA Dorcas",
+    name: "Mme Dorcas DA SILVA",
     role: "Creative Director & UI/UX",
     img: Dor,
     bio: "Spécialiste de la narration visuelle et de la psychologie des interfaces. Elle façonne des identités de marque mémorables et conçoit des parcours utilisateurs immersifs à fort taux de conversion.",

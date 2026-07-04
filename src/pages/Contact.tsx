@@ -41,7 +41,7 @@ const Contact: React.FC = () => {
 
                         {/* Carte Email */}
                         <motion.a 
-                            href="mailto:dasilvadevon51@gmail.com"
+                            href="mailto:dascom2004@gmail.com"
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.2 }}
@@ -52,7 +52,7 @@ const Contact: React.FC = () => {
                             </div>
                             <div>
                                 <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-1">Email Direct</h3>
-                                <p className="text-lg font-black text-[#1C1E36]">dasilvadevon51@gmail.com</p>
+                                <p className="text-lg font-black text-[#1C1E36]">dascom2004@gmail.com</p>
                             </div>
                         </motion.a>
 
