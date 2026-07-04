@@ -56,6 +56,7 @@ const featuredProjects = [
     tag: 'Branding & Web',
     title: 'MADES Sports Org',
     description: 'Identité graphique moderne et plateforme dynamique pour athlètes de haut niveau.',
+    link: 'https://mades-site.vercel.app/'
   }
 ];
 
@@ -133,7 +134,7 @@ const Home: React.FC = () => {
             <h2 className="text-3xl font-black tracking-tighter">Des solutions bâties pour l'impact.</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
             {services.map((service, i) => (
               <button 
                 key={i} 
@@ -183,14 +184,18 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {featuredProjects.map((p, index) => (
               <div key={index} className="bg-gray-50 border border-gray-100 p-8 rounded-[2rem] flex flex-col justify-between group hover:border-[#2D3079]/20 transition-all min-h-[250px]">
-                <div>
-                  <span className="text-[8px] font-black uppercase tracking-widest bg-white border border-gray-200 px-2.5 py-1 rounded-full text-gray-400">{p.tag}</span>
-                  <h4 className="text-xl font-black tracking-tight mt-5 text-[#1C1E36]">{p.title}</h4>
-                  <p className="text-gray-500 text-xs mt-2 leading-relaxed">{p.description}</p>
-                </div>
+                <a href={p.link} target="_blank" rel="noopener noreferrer" className="text-[#2D3079] hover:text-[#27BAA3] transition-colors">
+                  <div>
+                    <span className="text-[8px] font-black uppercase tracking-widest bg-white border border-gray-200 px-2.5 py-1 rounded-full text-gray-400">{p.tag}</span>
+                    <h4 className="text-xl font-black tracking-tight mt-5 text-[#1C1E36]">{p.title}</h4>
+                    <p className="text-gray-500 text-xs mt-2 leading-relaxed">{p.description}</p>
+                  </div>
+                </a>
                 <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end">
                   <div className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-[#2D3079] group-hover:text-white transition-all">
-                    <ArrowUpRight size={14} />
+                    
+                      <ArrowUpRight size={14} />
+                    
                   </div>
                 </div>
               </div>
