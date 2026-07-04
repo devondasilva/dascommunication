@@ -12,7 +12,6 @@ import {
   Globe,
   Lock,
   Layers,
-  Terminal,
   Clock3,
   Megaphone,
   Smartphone,
