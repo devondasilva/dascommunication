@@ -143,9 +143,6 @@ const Nav: React.FC = () => {
           </div>
         </div>
       </nav>
-
-      {/* Spacer adaptatif pour caler le contenu sous la nav */}
-      <div className="h-20 md:h-24"></div>
     </>
   );
 };
