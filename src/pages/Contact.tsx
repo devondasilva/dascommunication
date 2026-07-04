@@ -5,8 +5,7 @@ import Nav from '../components/Nav';
 import '../index.css';
 
 const Contact: React.FC = () => {
-    const primaryColor = "#27BAA3"; // Turquoise DASCOMM
-    const darkColor = "#1C1E36";    // Bleu nuit
+    const primaryColor = "#27BAA3"; 
 
     return (
         <div className="min-h-screen bg-[#FAFAFA] font-sans text-[#1C1E36] selection:bg-[#27BAA3] selection:text-white">

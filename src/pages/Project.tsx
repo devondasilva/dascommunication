@@ -43,7 +43,6 @@ export default function Project() {
   });
 
   const primaryColor = "#27BAA3";   // Turquoise
-  const secondaryColor = "#2D3079"; // Bleu profond
 
   const handleOpen = (item: ProjectItem) => {
     setActiveImg(item);

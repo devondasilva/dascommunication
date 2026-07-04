@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
+import {ArrowRight, ShieldCheck } from 'lucide-react';
 import log from '../assets/img/log.png';    
 
 const Footer: React.FC = () => {
