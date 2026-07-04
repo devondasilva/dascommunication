@@ -57,7 +57,7 @@ const Nav: React.FC = () => {
         className={`fixed top-0 w-full z-[100] transition-all duration-300 ease-in-out ${
           isVisible ? 'translate-y-0' : '-translate-y-full'
         } ${
-          isScrolled || isOpen ? 'py-4 bg-white shadow-lg' : 'py-6 bg-transparent'
+          isScrolled || isOpen ? 'py-4 bg-white shadow-lg' : 'py-6 bg-white'
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
@@ -70,7 +70,7 @@ const Nav: React.FC = () => {
           </div>
 
           {/* NAVIGATION DESKTOP */}
-          <div className="hidden md:flex items-center gap-10 bg-white">
+          <div className="hidden md:flex items-center gap-10">
             {navLinks.map((link) => (
               <a 
                 key={link.name}
