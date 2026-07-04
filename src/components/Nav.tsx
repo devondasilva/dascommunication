@@ -70,7 +70,7 @@ const Nav: React.FC = () => {
           </div>
 
           {/* NAVIGATION DESKTOP */}
-          <div className="hidden md:flex items-center gap-10">
+          <div className="hidden md:flex items-center gap-10 bg-white">
             {navLinks.map((link) => (
               <a 
                 key={link.name}
