@@ -5,27 +5,58 @@ import logo from '../assets/img/logo_fr.png';
 const Nav: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false); // État pour le menu mobile
+  const [isVisible, setIsVisible] = useState(true); // État pour cacher au scroll bas
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-  const brandColor = "#8DC63F";
+  const brandColor = "#27BAA3";
 
+  // Gestion du scroll (effet sticky et masquage automatique)
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+
+      // 1. Gestion de l'ombre et de la hauteur au scroll
+      setIsScrolled(currentScrollY > 20);
+
+      // 2. Gestion de la disparition au scroll vers le bas (se déclenche après 80px)
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        if (!isOpen) setIsVisible(false); // On cache si on descend (et que le menu mobile est fermé)
+      } else {
+        setIsVisible(true); // On réaffiche dès qu'on remonte
+      }
+
+      setLastScrollY(currentScrollY);
     };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY, isOpen]);
+
+  // Bloquer le scroll de l'arrière-plan (body) quand le menu mobile est ouvert
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   const navLinks = [
     { name: 'Expertises', href: '/Expertises' },
-    { name: 'Projets', href: '/Projets' },
-    { name: 'About', href: '/About' },
+    { name: 'Projets', href: '/Project' },
+    { name: 'À Propos', href: '/About' },
+    { name: 'Contact', href: '/Contact' },
   ];
 
   return (
     <>
       <nav 
-        className={`fixed top-0 w-full z-[100] transition-all duration-300 ${
+        className={`fixed top-0 w-full z-[100] transition-all duration-300 ease-in-out ${
+          isVisible ? 'translate-y-0' : '-translate-y-full'
+        } ${
           isScrolled || isOpen ? 'py-4 bg-white shadow-lg' : 'py-6 bg-transparent'
         }`}
       >
@@ -68,7 +99,8 @@ const Nav: React.FC = () => {
             {/* BOUTON BURGER (Visible uniquement sur mobile) */}
             <button 
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 text-[#333333] focus:outline-none"
+              className="md:hidden p-2 text-[#333333] focus:outline-none transition-colors"
+              aria-label="Toggle menu"
             >
               {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -77,39 +109,43 @@ const Nav: React.FC = () => {
 
         {/* --- MENU MOBILE OVERLAY --- */}
         <div className={`
-          fixed inset-0 bg-white z-[105] flex flex-col justify-center items-center transition-transform duration-500 ease-in-out md:hidden
-          ${isOpen ? 'translate-x-0' : 'translate-x-full'}
+          fixed inset-0 bg-white z-[105] flex flex-col justify-between items-center transition-all duration-500 ease-in-out md:hidden
+          pt-24 pb-6 px-6 h-screen
+          ${isOpen ? 'translate-x-0 opacity-100 pointer-events-auto' : 'translate-x-full opacity-0 pointer-events-none'}
         `}>
-          <div className="flex flex-col gap-8 text-center">
+          
+          {/* Conteneur des Liens - Utilisation de my-auto pour équilibrer, gap serré et ajustement hauteur */}
+          <div className="flex flex-col gap-[4vh] text-center w-full max-w-sm my-auto">
             {navLinks.map((link) => (
               <a 
                 key={link.name}
                 href={link.href}
-                onClick={() => setIsOpen(false)} // Ferme le menu au clic
-                className="text-3xl font-black uppercase tracking-tighter text-[#333333] hover:text-[#8DC63F] transition-colors"
+                onClick={() => setIsOpen(false)}
+                className="text-2xl xs:text-3xl font-black uppercase tracking-tighter text-[#333333] hover:text-[#27BAA3] transition-colors"
               >
                 {link.name}
               </a>
             ))}
+            
             <a 
               href="#proforma"
               onClick={() => setIsOpen(false)}
-              className="mt-4 px-8 py-4 rounded-full text-white font-black uppercase tracking-widest text-sm"
+              className="mt-2 px-8 py-3.5 rounded-full text-white font-black uppercase tracking-widest text-xs sm:text-sm text-center shadow-md active:scale-95 transition-transform w-full"
               style={{ backgroundColor: brandColor }}
             >
               Devis Proforma
             </a>
           </div>
           
-          {/* Social Links Small */}
-          <div className="absolute bottom-10 flex gap-6">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">DASCOMMUNICATION</span>
+          {/* Social / Footer en bas, fixe sans encombrer le milieu */}
+          <div className="flex justify-center w-full pt-4 border-t border-gray-100">
+            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest italic">DASCOMMUNICATION</span>
           </div>
         </div>
       </nav>
 
-      {/* Spacer pour éviter que le contenu ne passe sous le header fixe */}
-      <div className="h-0 md:h-0"></div>
+      {/* Spacer adaptatif pour caler le contenu sous la nav */}
+      <div className="h-20 md:h-24"></div>
     </>
   );
 };

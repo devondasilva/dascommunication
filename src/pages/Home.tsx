@@ -1,140 +1,322 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Nav from '../components/Nav';
-import { Send, Upload, CheckCircle2, ChevronRight } from 'lucide-react';
+import {
+  Send,
+  Sparkles,
+  Code2,
+  Palette,
+  Plus,
+  ArrowUpRight,
+  ChevronDown,
+  Globe,
+  Lock,
+  Layers
+} from 'lucide-react';
 import poster from '../assets/img/poster.png';
 
+const services = [
+  {
+    icon: <Palette />,
+    title: "Brand Identity", 
+    desc: "Création de récits visuels uniques et d'identités de marque fortes pour marquer votre marché.",
+    filter: "Brand Identity",
+    tags: ["Design", "Branding", "Campagnes"]
+  },
+  {
+    icon: <Sparkles />,
+    title: "Logo Showcase", 
+    desc: "Développement logotypes sur-mesure et chartes graphiques adaptées à tous vos supports.",
+    filter: "Logo Showcase",
+    tags: ["Logo", "Assets", "Identité"]
+  },
+  {
+    icon: <Code2 />,
+    title: "Web Design", 
+    desc: "Interfaces UI/UX fluides et écosystèmes web modernes codés pour la performance et la conversion.",
+    filter: "Web Design",
+    tags: ["Next.js", "UI/UX", "Tailwind"]
+  }
+];
+
+const featuredProjects = [
+  {
+    tag: 'Next.js & E-Commerce',
+    title: 'Aura Premium Odyssée',
+    description: 'Refonte de l\'expérience d\'achat cosmétique. +42% de performances de chargement.',
+  },
+  {
+    tag: 'SaaS Platform',
+    title: 'PANAGRO Management',
+    description: 'Interface d\'analyses prédictives et suivi d\'investissements agricoles d\'envergure.',
+  },
+  {
+    tag: 'Branding & Web',
+    title: 'MADES Sports Org',
+    description: 'Identité graphique moderne et plateforme dynamique pour athlètes de haut niveau.',
+  }
+];
+
+const faqs = [
+  {
+    question: 'Quel est le délai moyen de conception ?',
+    answer: 'Comptez 2 à 3 semaines pour un site vitrine stratégique, et 6 à 12 semaines pour une plateforme sur-mesure ou une application complexe.'
+  },
+  {
+    question: 'Comment fonctionne la facturation ?',
+    answer: 'Une facture proforma détaillée vous est envoyée sous 24h ouvrées. Le règlement est découpé par jalons (acompte, livraison).'
+  },
+  {
+    question: 'Le suivi technique est-il inclus ?',
+    answer: 'Oui, chaque projet intègre une garantie totale et un support technique de 30 jours.'
+  }
+];
+
 const Home: React.FC = () => {
-  const brandColor = "#8DC63F";
+  const [besoin, setBesoin] = useState('Web Design');
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  
+  const navigate = useNavigate();
+
+  // Redirection harmonisée vers '/Project'
+  const handleServiceClick = (e: React.MouseEvent, filterValue: string) => {
+    e.preventDefault();
+    navigate('/Project', { state: { filter: filterValue } });
+  };
 
   return (
-    <div className="min-h-screen bg-white">
-      <Nav/>
-      {/* --- HERO SECTION --- */}
-      <header className="pt-32 pb-16 px-6 max-w-7xl mx-auto">
-        
-        <div className="flex flex-col-reverse md:flex-row items-center gap-12">
-          <div className="flex-1 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#8DC63F]/10 border border-[#8DC63F]/20 mb-6">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8DC63F] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#8DC63F]"></span>
-              </span>
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#333333]">Disponible pour vos projets</span>
-            </div>
-            
-            <h1 className="text-6xl md:text-8xl font-black text-[#333333] leading-[0.95] tracking-tighter mb-8">
-              DESIGNER <br />
-              <span style={{ color: brandColor }}>L'IMPACT.</span>
-            </h1>
+    <div className="min-h-screen bg-white text-[#1C1E36] font-sans overflow-x-hidden selection:bg-[#27BAA3] selection:text-white">
+      <Nav />
 
-            <p className="text-xl text-gray-600 max-w-lg leading-relaxed mb-10">
-              Expertise bilingue en <span className="font-bold text-[#333333]">transformation digitale</span>. 
-              Nous créons des solutions tech haute performance et des identités visuelles fortes.
+      {/* --- BACKGROUND BLOBS --- */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#27BAA3]/5 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#2D3079]/4 blur-[120px] rounded-full"></div>
+      </div>
+
+      <main className="relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-20 space-y-24">
+        
+        {/* --- HERO SECTION --- */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          <div className="lg:col-span-8 bg-[#2D3079]/5 border border-[#2D3079]/10 backdrop-blur-xl rounded-[2rem] p-8 md:p-12 flex flex-col justify-center relative overflow-hidden group">
+            <div className="absolute top-6 right-6 opacity-30 group-hover:opacity-100 transition-opacity">
+              <Sparkles size={32} className="text-[#27BAA3]" />
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#2D3079] mb-4">
+              Studio digital — MD · VA · Bénin
             </p>
-
-            <div className="flex flex-wrap gap-4">
-              <button className="px-8 py-4 bg-[#333333] text-white font-bold rounded-lg hover:bg-[#8DC63F] transition-all shadow-xl shadow-black/10">
-                Lancer un Projet
-              </button>
-              <button className="px-8 py-4 border-2 border-gray-200 text-[#333333] font-bold rounded-lg hover:border-[#333333] transition-all">
-                Voir Portfolio
-              </button>
-            </div>
+            <h1 className="text-4xl md:text-7xl font-black tracking-tighter leading-[0.95] mb-6">
+              DIGITAL <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#27BAA3] to-[#2D3079]">
+                COMPANY.
+              </span>
+            </h1>
+            <p className="text-gray-600 text-base md:text-lg max-w-md leading-relaxed">
+              Nous fusionnons <span className="text-[#2D3079] font-bold">code de précision</span> et design visionnaire pour propulser votre impact business.
+            </p>
           </div>
 
-          <div className="flex-1 flex justify-center relative">
-             <div className="absolute inset-0 bg-[#8DC63F]/10 blur-3xl rounded-full scale-75"></div>
-             <img src={poster} alt="Poster" className="relative w-full max-w-md z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)]" />
-          </div>
-        </div>
-      </header>
-
-      {/* --- SERVICES (CONTRASTE ÉLEVÉ) --- */}
-      <section className="py-24 bg-gray-50 border-y border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-xs font-black uppercase tracking-[0.4em] text-gray-400 mb-12">Nos Expertises</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <ServiceCard title="Marketing Digital" icon={<CheckCircle2 color={brandColor} />} />
-            <ServiceCard title="Web Development" icon={<CheckCircle2 color={brandColor} />} />
-            <ServiceCard title="Graphic Design" icon={<CheckCircle2 color={brandColor} />} />
+          <div className="lg:col-span-4 bg-gradient-to-br from-[#2D3079] to-[#1C1E36] rounded-[2rem] overflow-hidden flex items-center justify-center p-6 min-h-[250px]">
+            <img
+              src={poster}
+              alt="Design"
+              className="w-full h-full max-h-[240px] object-contain transform hover:scale-103 transition-transform duration-500"
+            />
           </div>
         </div>
-      </section>
 
-      {/* --- FORMULAIRES (LISIBILITÉ MAXIMALE) --- */}
-      <section className="py-24 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16">
-        
-        {/* PROFORMA - FOND BLANC ÉPURÉ */}
-        <div className="bg-white p-10 rounded-3xl border-2 border-gray-100 shadow-2xl shadow-gray-200/50">
-          <h3 className="text-3xl font-black text-[#333333] mb-2">Demande de Proforma</h3>
-          <p className="text-gray-500 mb-8 font-medium">Obtenez un devis précis pour vos besoins.</p>
-          
-          <form className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-[#333333]">Entreprise / Nom</label>
-              <input type="text" className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl focus:border-[#8DC63F] focus:ring-1 focus:ring-[#8DC63F] outline-none transition-all" />
+        {/* --- EXPERTISE / SERVICES --- */}
+        <section>
+          <div className="mb-10">
+            <p className="text-[10px] font-black uppercase tracking-widest text-[#27BAA3] mb-1">Expertise</p>
+            <h2 className="text-3xl font-black tracking-tighter">Des solutions bâties pour l'impact.</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {services.map((service, i) => (
+              <button 
+                key={i} 
+                onClick={(e) => handleServiceClick(e, service.filter)}
+                className="group text-left relative p-8 bg-gray-50 border border-gray-100 rounded-[2rem] hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 flex flex-col justify-between min-h-[250px] cursor-pointer"
+              >
+                <div>
+                  <div className="mb-4 text-[#2D3079]/40 group-hover:text-[#27BAA3] transition-colors">
+                    {service.icon}
+                  </div>
+                  <h4 className="text-xl font-black mb-2 tracking-tight group-hover:translate-x-1 transition-transform">{service.title}</h4>
+                  <p className="text-gray-500 text-sm leading-relaxed mb-6">{service.desc}</p>
+                </div>
+                
+                <div className="flex justify-between items-center mt-auto w-full">
+                  <div className="flex flex-wrap gap-1.5">
+                    {service.tags.map(tag => (
+                      <span key={tag} className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 bg-white border border-gray-200/60 rounded-full text-gray-400">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="text-gray-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                    <ArrowUpRight size={18} />
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* --- PORTFOLIO --- */}
+        <section>
+          <div className="flex justify-between items-end mb-10">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#27BAA3] mb-1">Réalisations</p>
+              <h3 className="text-3xl font-black tracking-tighter">Prêt pour la production.</h3>
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-[#333333]">Service</label>
-              <select className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none">
-                <option>Site Internet / App</option>
-                <option>Marketing & SEO</option>
-                <option>Design & Branding</option>
-              </select>
-            </div>
-            <button className="w-full py-4 bg-[#8DC63F] text-white font-black rounded-xl hover:shadow-lg hover:shadow-[#8DC63F]/30 transition-all flex items-center justify-center gap-3">
-              ENVOYER LA DEMANDE <Send size={18} />
+            <button 
+              onClick={() => navigate('/Project')} // Aligné également sur '/Project'
+              className="group flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#2D3079] hover:opacity-75 transition-opacity cursor-pointer bg-transparent border-none"
+            >
+              Voir tout <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
-          </form>
-        </div>
+          </div>
 
-        {/* RECRUTEMENT - FOND NOIR CONTRASTÉ */}
-        <div className="bg-[#333333] p-10 rounded-3xl shadow-2xl text-white relative overflow-hidden">
-          <h3 className="text-3xl font-black mb-2 text-[#8DC63F]">Recrutement</h3>
-          <p className="text-gray-400 mb-8 font-medium">Rejoignez l'équipe DASCOMMUNICATION.</p>
-          
-          <div className="space-y-8">
-            <div className="flex items-center gap-6 p-6 bg-white/5 border border-white/10 rounded-2xl group hover:border-[#8DC63F] transition-all cursor-pointer">
-              <div className="bg-[#8DC63F] p-4 rounded-full text-[#333333]">
-                <Upload size={24} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {featuredProjects.map((p, index) => (
+              <div key={index} className="bg-gray-50 border border-gray-100 p-8 rounded-[2rem] flex flex-col justify-between group hover:border-[#2D3079]/20 transition-all min-h-[250px]">
+                <div>
+                  <span className="text-[8px] font-black uppercase tracking-widest bg-white border border-gray-200 px-2.5 py-1 rounded-full text-gray-400">{p.tag}</span>
+                  <h4 className="text-xl font-black tracking-tight mt-5 text-[#1C1E36]">{p.title}</h4>
+                  <p className="text-gray-500 text-xs mt-2 leading-relaxed">{p.description}</p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end">
+                  <div className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-[#2D3079] group-hover:text-white transition-all">
+                    <ArrowUpRight size={14} />
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="font-bold text-lg">Déposer votre Portfolio</p>
-                <p className="text-xs text-gray-500 uppercase tracking-widest">PDF ou Lien externe</p>
+            ))}
+          </div>
+        </section>
+
+        {/* --- ENGAGEMENTS SUBTILS --- */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+          <div className="flex gap-4 items-start">
+            <div className="p-2.5 bg-[#27BAA3]/10 text-[#27BAA3] rounded-xl"><Globe size={18} /></div>
+            <div>
+              <h4 className="text-sm font-black uppercase tracking-tight">Portée Transatlantique</h4>
+              <p className="text-xs text-gray-500 mt-1 leading-relaxed">Standards techniques US couplés à la réactivité d'un hub dynamique.</p>
+            </div>
+          </div>
+          <div className="flex gap-4 items-start">
+            <div className="p-2.5 bg-[#2D3079]/10 text-[#2D3079] rounded-xl"><Lock size={18} /></div>
+            <div>
+              <h4 className="text-sm font-black uppercase tracking-tight">Sécurité & Perf</h4>
+              <p className="text-xs text-gray-500 mt-1 leading-relaxed">Architectures durcies conçues pour absorber de forts pics d'audience.</p>
+            </div>
+          </div>
+          <div className="flex gap-4 items-start">
+            <div className="p-2.5 bg-gray-100 text-gray-600 rounded-xl"><Layers size={18} /></div>
+            <div>
+              <h4 className="text-sm font-black uppercase tracking-tight">Zéro Dette Technique</h4>
+              <p className="text-xs text-gray-500 mt-1 leading-relaxed">Code typé, modulaire et documenté. Vous restez propriétaire à 100%.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* --- ACTION & CONTACT --- */}
+        <section id="proforma" className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          <div className="lg:col-span-7 bg-[#2D3079] rounded-[2.5rem] p-8 md:p-10 text-white flex flex-col justify-between">
+            <div className="mb-6">
+              <h3 className="text-3xl font-black tracking-tighter">Prêt à démarrer ?</h3>
+              <p className="text-gray-300 text-xs mt-1 italic">Demandez une proforma instantanée sous 24h.</p>
+            </div>
+
+            <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  required
+                  placeholder="Nom ou Entreprise"
+                  className="w-full px-5 py-3.5 bg-white/10 rounded-xl border border-transparent focus:border-[#27BAA3] focus:bg-white focus:text-black outline-none transition-all font-medium text-sm text-white placeholder-gray-400"
+                />
+                <input
+                  type="email"
+                  required
+                  placeholder="vous@entreprise.com"
+                  className="w-full px-5 py-3.5 bg-white/10 rounded-xl border border-transparent focus:border-[#27BAA3] focus:bg-white focus:text-black outline-none transition-all font-medium text-sm text-white placeholder-gray-400"
+                />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={besoin}
+                  onChange={(e) => setBesoin(e.target.value)}
+                  className="w-full px-5 py-3.5 bg-white/10 rounded-xl border border-transparent focus:border-[#27BAA3] focus:bg-white focus:text-black outline-none transition-all font-medium text-sm text-white cursor-pointer appearance-none"
+                >
+                  <option value="Brand Identity">Brand Identity</option>
+                  <option value="Logo Showcase">Logo Showcase</option>
+                  <option value="Web Design">Web Design</option>
+                </select>
+                <div className="absolute right-5 bottom-4 pointer-events-none text-gray-400 rotate-45">
+                  <ArrowUpRight size={16} />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-4 bg-white text-[#2D3079] rounded-xl font-black uppercase tracking-wider text-xs hover:bg-[#27BAA3] hover:text-white transition-all flex items-center justify-center gap-2 group cursor-pointer"
+              >
+                <span>Envoyer la demande</span>
+                <Send size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </button>
+            </form>
+          </div>
+
+          <div className="lg:col-span-5 bg-gray-50 border border-gray-100 rounded-[2.5rem] p-8 flex flex-col justify-between">
+            <div>
+              <h3 className="text-2xl font-black tracking-tighter mb-4">Rejoindre le Studio</h3>
+              <div className="divide-y divide-gray-100">
+                <div className="py-3 flex justify-between items-center text-sm font-bold">
+                  <span>Frontend Lead</span>
+                  <span className="text-[9px] bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-400">React / TS</span>
+                </div>
+                <div className="py-3 flex justify-between items-center text-sm font-bold">
+                  <span>Art Director</span>
+                  <span className="text-[9px] bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-400">Figma</span>
+                </div>
               </div>
             </div>
 
-            <div className="p-6 bg-white/5 border border-white/10 rounded-2xl">
-              <h4 className="font-bold text-[#8DC63F] mb-2 uppercase text-xs tracking-widest">Postes Ouverts :</h4>
-              <ul className="text-sm space-y-2 text-gray-300">
-                <li className="flex items-center gap-2"><ChevronRight size={14} color={brandColor} /> Full-Stack Developer (React/TSX)</li>
-                <li className="flex items-center gap-2"><ChevronRight size={14} color={brandColor} /> UI/UX Designer</li>
-              </ul>
-            </div>
+            <button className="mt-6 py-4 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center gap-1.5 hover:border-[#27BAA3] hover:bg-[#27BAA3]/5 transition-all group cursor-pointer">
+              <Plus size={16} className="text-gray-400 group-hover:text-[#27BAA3]" />
+              <span className="text-[10px] font-black uppercase tracking-wider text-gray-400 group-hover:text-[#1C1E36]">Déposer un Portfolio</span>
+            </button>
           </div>
-        </div>
+        </section>
 
-      </section>
-
-      {/* --- FOOTER --- */}
-      <footer className="py-12 border-t border-gray-100 bg-white px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-2xl font-black">
-            <span style={{ color: brandColor }}>DAS</span><span className="text-[#333333]">COMMUNICATION</span>
+        {/* --- FAQ --- */}
+        <section className="max-w-2xl mx-auto pt-4">
+          <h3 className="text-2xl font-black tracking-tighter text-center mb-6">FAQ</h3>
+          <div className="space-y-3">
+            {faqs.map((faq, i) => (
+              <div key={i} className="bg-gray-50 border border-gray-100 rounded-xl overflow-hidden">
+                <button 
+                  onClick={() => setActiveFaq(activeFaq === i ? null : i)}
+                  className="w-full p-5 flex justify-between items-center text-left font-bold text-sm text-[#1C1E36] hover:bg-gray-100/40 transition-colors"
+                >
+                  <span>{faq.question}</span>
+                  <ChevronDown size={16} className={`transform transition-transform duration-200 ${activeFaq === i ? 'rotate-180' : ''}`} />
+                </button>
+                <div className={`transition-all duration-200 ease-in-out overflow-hidden ${activeFaq === i ? 'max-h-32 border-t border-gray-100 bg-white' : 'max-h-0'}`}>
+                  <p className="p-5 text-xs text-gray-600 leading-relaxed">{faq.answer}</p>
+                </div>
+              </div>
+            ))}
           </div>
-          <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">© 2026 Maryland & Virginia — Studio de Création</p>
-        </div>
-      </footer>
+        </section>
+
+      </main>
     </div>
   );
 };
-
-const ServiceCard = ({ title, icon }: { title: string, icon: React.ReactNode }) => (
-  <div className="p-8 bg-white border border-gray-200 rounded-2xl hover:border-[#333333] transition-all group shadow-sm">
-    <div className="mb-4 transform group-hover:scale-110 transition-transform">{icon}</div>
-    <h3 className="text-xl font-black text-[#333333]">{title}</h3>
-    <div className="h-1 w-8 bg-[#8DC63F] mt-4 group-hover:w-full transition-all"></div>
-  </div>
-);
 
 export default Home;

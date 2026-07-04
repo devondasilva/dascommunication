@@ -7,4 +7,11 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  optimizeDeps: {
+    include: ['react-pageflip']
+  },
+  // Si tu utilises un framework ou un plugin qui fait du SSR/Prerendering, ajoute aussi ceci :
+  ssr: {
+    noExternal: ['react-pageflip']
+  }
 })
