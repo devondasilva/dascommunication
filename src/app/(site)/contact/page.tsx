@@ -23,7 +23,7 @@ export default function PageContact() {
       <div className="mt-14 grid gap-5 md:grid-cols-3">
         <Link
           href="/commander"
-          className="group flex flex-col justify-between rounded-2xl bg-encre p-7 text-white transition hover:bg-encre/90 md:row-span-2"
+          className="group flex flex-col justify-between rounded-md bg-encre p-7 text-white transition hover:bg-encre/90 md:row-span-2"
         >
           <div>
             <p className="text-sm text-white/60">Le plus rapide</p>
@@ -40,7 +40,7 @@ export default function PageContact() {
 
         <a
           href={`mailto:${SITE.email}`}
-          className="group flex items-start gap-4 rounded-2xl bg-white p-7 ring-1 ring-bordure transition hover:ring-encre/25"
+          className="group flex items-start gap-4 rounded-md bg-white p-7 ring-1 ring-bordure transition hover:ring-encre/25"
         >
           <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-fond text-marque-texte">
             <Mail aria-hidden className="size-5" />
@@ -51,7 +51,7 @@ export default function PageContact() {
           </div>
         </a>
 
-        <div className="flex items-start gap-4 rounded-2xl bg-white p-7 ring-1 ring-bordure">
+        <div className="flex items-start gap-4 rounded-md bg-white p-7 ring-1 ring-bordure">
           <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-fond text-marque-texte">
             <MapPin aria-hidden className="size-5" />
           </span>
@@ -64,7 +64,7 @@ export default function PageContact() {
 
         <Link
           href="/suivi"
-          className="group flex items-start gap-4 rounded-2xl bg-white p-7 ring-1 ring-bordure transition hover:ring-encre/25"
+          className="group flex items-start gap-4 rounded-md bg-white p-7 ring-1 ring-bordure transition hover:ring-encre/25"
         >
           <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-fond text-marque-texte">
             <SearchCheck aria-hidden className="size-5" />
@@ -75,7 +75,7 @@ export default function PageContact() {
           </div>
         </Link>
 
-        <div className="flex flex-col justify-between gap-4 rounded-2xl bg-white p-7 ring-1 ring-bordure">
+        <div className="flex flex-col justify-between gap-4 rounded-md bg-white p-7 ring-1 ring-bordure">
           <h2 className="text-sm text-encre-muette">Suivez-nous</h2>
           <Reseaux />
         </div>

@@ -12,7 +12,7 @@ export function CarteRealisation({ realisation: r, priorite = false }: { realisa
   const estLogo = r.categorie === "logos";
   return (
     <article className="group relative mb-10 break-inside-avoid">
-      <div className={cx("overflow-hidden rounded-3xl", estLogo ? "grid aspect-square place-items-center bg-fond p-12" : "bg-fond")}>
+      <div className={cx("overflow-hidden rounded-lg", estLogo ? "grid aspect-square place-items-center bg-fond p-12" : "bg-fond")}>
         <Image
           src={r.image.src}
           alt={r.image.alt}
