@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/*
+ * DAS COM — design system
+ * Indigo du « D » du logo pour l'encre et les surfaces foncées,
+ * teal de la virgule pour l'action. Titres en Bricolage Grotesque
+ * (optique variable), texte en Instrument Sans.
+ */
+@theme {
+  --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-titre: "Bricolage Grotesque Variable", "Instrument Sans Variable", ui-sans-serif, sans-serif;
+
+  --color-marque: #27baa3;
+  --color-marque-fonce: #1e9c88; /* barres, traits : contraste ≥ 3:1 sur blanc */
+  --color-marque-texte: #0e7464; /* texte teal sur blanc : contraste AA */
+  --color-marque-pale: #e3f6f2;
+
+  --color-encre: #1c2066; /* indigo du logo */
+  --color-encre-douce: #474b7a;
+  --color-encre-muette: #676b90;
+  --color-nuit: #12154a; /* surfaces foncées */
+
+  --color-surface: #ffffff;
+  --color-fond: #f2f3f8;
+  --color-bordure: #e1e3ef;
+
+  --ease-sortie: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background: var(--color-surface);
+    color: var(--color-encre);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01";
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-titre);
+    font-optical-sizing: auto;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: var(--color-marque);
+    color: var(--color-nuit);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-marque-fonce);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* Mur d'affiches de l'accueil : colonnes qui défilent lentement */
+@keyframes defilement-haut {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@utility defile-lent {
+  animation: defilement-haut 70s linear infinite;
+}
+@utility defile-moyen {
+  animation: defilement-haut 55s linear infinite;
+}
+@utility defile-rapide {
+  animation: defilement-haut 85s linear infinite reverse;
+}
+@utility masque-vertical {
+  mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+}
