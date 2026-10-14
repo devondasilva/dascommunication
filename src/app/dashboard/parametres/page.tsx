@@ -12,7 +12,7 @@ export default async function PageParametres() {
     <div className="max-w-3xl">
       <EntetePage
         titre="Paramètres du site"
-        description="Coordonnées, réseaux sociaux et textes de la bannière d'appel au devis. Les changements sont visibles immédiatement."
+        description="Coordonnées, réseaux sociaux, textes de la bannière d'appel au devis (français et anglais) et taux du dollar. Les changements sont visibles immédiatement."
       />
       <FormulaireParametres parametres={p} />
     </div>

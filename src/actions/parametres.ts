@@ -18,21 +18,26 @@ export async function enregistrerTarifs(_: EtatFormulaire, formData: FormData): 
   const c = await autoriser("services.gerer");
   if (!c) return { message: "Votre rôle ne vous permet pas de modifier les tarifs." };
 
-  const actuels = await db.select({ id: services.id, nom: services.nom, prix: services.prixDepart, delai: services.delaiJours }).from(services);
+  const actuels = await db
+    .select({ id: services.id, nom: services.nom, prix: services.prixDepart, usd: services.prixUsd, delai: services.delaiJours })
+    .from(services);
+  type Valeurs = { prix: number; usd: number | null; delai: number };
   const erreurs: Record<string, string[]> = {};
-  const changements: { id: number; nom: string; prix: number; delai: number; avant: { prix: number; delai: number } }[] = [];
+  const changements: (Valeurs & { id: number; nom: string; avant: Valeurs })[] = [];
 
   for (const s of actuels) {
     const prix = formData.get(`prix-${s.id}`);
+    const usd = formData.get(`usd-${s.id}`) ?? (s.usd != null ? String(s.usd) : "");
     const delai = formData.get(`delai-${s.id}`);
     if (prix === null || delai === null) continue;
-    const parse = schemaTarif.safeParse({ prix, delai });
+    const parse = schemaTarif.safeParse({ prix, usd, delai });
     if (!parse.success) {
       for (const issue of parse.error.issues) erreurs[`${String(issue.path[0])}-${s.id}`] = [issue.message];
       continue;
     }
-    if (parse.data.prix !== s.prix || parse.data.delai !== s.delai) {
-      changements.push({ id: s.id, nom: s.nom, ...parse.data, avant: { prix: s.prix, delai: s.delai } });
+    const d = parse.data;
+    if (d.prix !== s.prix || d.usd !== s.usd || d.delai !== s.delai) {
+      changements.push({ id: s.id, nom: s.nom, ...d, avant: { prix: s.prix, usd: s.usd, delai: s.delai } });
     }
   }
 
@@ -45,13 +50,20 @@ export async function enregistrerTarifs(_: EtatFormulaire, formData: FormData): 
 
   await db.transaction(async (tx) => {
     for (const ch of changements) {
-      await tx.update(services).set({ prixDepart: ch.prix, delaiJours: ch.delai }).where(eq(services.id, ch.id));
+      await tx
+        .update(services)
+        .set({ prixDepart: ch.prix, prixUsd: ch.usd, delaiJours: ch.delai })
+        .where(eq(services.id, ch.id));
     }
   });
   await journaliser(acteur(c), "tarifs.modifies", `${changements.length} service(s)`, {
     changements: changements.map((ch) => ({
       service: ch.nom,
       prix: ch.prix !== ch.avant.prix ? `${formaterMontant(ch.avant.prix)} → ${formaterMontant(ch.prix)}` : undefined,
+      usd:
+        ch.usd !== ch.avant.usd
+          ? `${ch.avant.usd != null ? formaterMontant(ch.avant.usd, "USD") : "auto"} → ${ch.usd != null ? formaterMontant(ch.usd, "USD") : "auto"}`
+          : undefined,
       delai: ch.delai !== ch.avant.delai ? `${ch.avant.delai} → ${ch.delai} jours` : undefined,
     })),
   });
@@ -71,6 +83,10 @@ const LIMITES: Partial<Record<(typeof CLES_PARAMETRES)[number], number>> = {
   banniereTitre: 90,
   banniereAccroche: 60,
   banniereArguments: 300,
+  banniereTitreEn: 90,
+  banniereAccrocheEn: 60,
+  banniereArgumentsEn: 300,
+  tauxUsd: 10,
 };
 
 export async function enregistrerParametres(_: EtatFormulaire, formData: FormData): Promise<EtatFormulaire> {
@@ -88,7 +104,12 @@ export async function enregistrerParametres(_: EtatFormulaire, formData: FormDat
       erreurs[cle] = ["Le lien doit commencer par https://"];
     }
     if (cle === "email" && v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) erreurs[cle] = ["Adresse e-mail invalide"];
-    if (["banniereTitre", "email"].includes(cle) && !v) erreurs[cle] = ["Champ obligatoire"];
+    if (cle === "tauxUsd") {
+      const n = Number(v.replace(",", "."));
+      if (!Number.isFinite(n) || n < 1 || n > 100000) erreurs[cle] = ["Indiquez un nombre, par exemple 600"];
+      else valeurs[cle] = String(n);
+    }
+    if (["banniereTitre", "email", "tauxUsd"].includes(cle) && !v) erreurs[cle] = ["Champ obligatoire"];
   }
   if (Object.keys(erreurs).length) return { message: "Merci de corriger les champs indiqués.", erreurs, valeurs };
 

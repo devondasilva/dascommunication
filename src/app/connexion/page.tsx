@@ -5,13 +5,14 @@ import { connexionClientDemo, connexionGoogle } from "@/actions/auth";
 import { Logo } from "@/components/site/logo";
 import { Alerte, cx } from "@/components/ui";
 import { COMPTES_DEMO } from "@/db/peupler";
+import { i18n } from "@/i18n/serveur";
 import { GOOGLE_CONFIGURE, MODE_DEMO } from "@/lib/config";
 import { FormulaireEquipe } from "./formulaire-equipe";
 
-export const metadata: Metadata = {
-  title: "Connexion",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { tr } = await i18n();
+  return { title: tr("Connexion", "Sign in"), robots: { index: false, follow: false } };
+}
 
 const AFFICHES = ["s18", "s16", "s11", "s21"];
 
@@ -28,6 +29,7 @@ function LogoGoogle() {
 
 export default async function PageConnexion({ searchParams }: PageProps<"/connexion">) {
   const sp = await searchParams;
+  const { tr, l } = await i18n();
   const espace = sp.espace === "equipe" ? "equipe" : "client";
   const redirection = typeof sp.redirection === "string" ? sp.redirection : undefined;
   const bienvenue = sp.bienvenue === "1";
@@ -41,7 +43,7 @@ export default async function PageConnexion({ searchParams }: PageProps<"/connex
     const q = params.toString();
     return (
       <Link
-        href={`/connexion${q ? `?${q}` : ""}`}
+        href={l(`/connexion${q ? `?${q}` : ""}`)}
         aria-current={espace === cle ? "page" : undefined}
         className={cx(
           "flex-1 rounded-lg px-3 py-2 text-center text-sm transition-colors",
@@ -67,12 +69,15 @@ export default async function PageConnexion({ searchParams }: PageProps<"/connex
         <div className="absolute inset-0 bg-gradient-to-t from-nuit via-nuit/70 to-nuit/10" />
         <div className="absolute inset-x-0 bottom-0 p-12">
           <p className="font-titre text-5xl leading-[0.95] font-semibold tracking-tight text-white">
-            Vos projets,
+            {tr("Vos projets,", "Your projects,")}
             <br />
-            au même endroit.
+            {tr("au même endroit.", "all in one place.")}
           </p>
           <p className="mt-5 max-w-sm text-white/70">
-            Devis, commandes, livrables et échanges avec l&apos;équipe DAS COM, depuis votre espace.
+            {tr(
+              "Devis, commandes, livrables et échanges avec l'équipe DAS COM, depuis votre espace.",
+              "Quotes, orders, deliverables and conversations with the DAS COM team, from your client area.",
+            )}
           </p>
         </div>
       </aside>
@@ -81,33 +86,44 @@ export default async function PageConnexion({ searchParams }: PageProps<"/connex
       <main className="flex flex-col px-6 py-10 sm:px-12">
         <div className="flex items-center justify-between">
           <Logo />
-          <Link href="/" className="text-sm text-encre-douce hover:text-encre">
-            Retour au site
+          <Link href={l("/")} className="text-sm text-encre-douce hover:text-encre">
+            {tr("Retour au site", "Back to website")}
           </Link>
         </div>
 
         <div className="mx-auto my-auto w-full max-w-sm py-12">
-          <h1 className="text-4xl font-semibold text-encre">Connexion</h1>
+          <h1 className="text-4xl font-semibold text-encre">{tr("Connexion", "Sign in")}</h1>
           <p className="mt-2 text-encre-douce">
             {espace === "client"
-              ? "Accédez à votre espace pour demander un devis et suivre vos projets."
-              : "Réservé aux membres de l'équipe DAS COM."}
+              ? tr(
+                  "Accédez à votre espace pour demander un devis et suivre vos projets.",
+                  "Access your client area to request quotes and follow your projects.",
+                )
+              : tr("Réservé aux membres de l'équipe DAS COM.", "For DAS COM team members only.")}
           </p>
 
-          <nav aria-label="Type de compte" className="mt-8 flex gap-1 rounded-xl bg-fond p-1">
-            {onglet("client", "Je suis client")}
-            {onglet("equipe", "Équipe DAS COM")}
+          <nav aria-label={tr("Type de compte", "Account type")} className="mt-8 flex gap-1 rounded-xl bg-fond p-1">
+            {onglet("client", tr("Je suis client", "I'm a client"))}
+            {onglet("equipe", tr("Équipe DAS COM", "DAS COM team"))}
           </nav>
 
           <div className="mt-8 space-y-4">
             {bienvenue && (
-              <Alerte ton="succes">Votre compte est prêt. Connectez-vous avec le mot de passe que vous venez de choisir.</Alerte>
+              <Alerte ton="succes">
+                {tr(
+                  "Votre compte est prêt. Connectez-vous avec le mot de passe que vous venez de choisir.",
+                  "Your account is ready. Sign in with the password you just chose.",
+                )}
+              </Alerte>
             )}
             {erreurOAuth && (
               <Alerte ton="erreur">
                 {erreurOAuth === "AccessDenied"
-                  ? "Ce compte Google n'a pas accès à l'espace (compte désactivé ou e-mail non vérifié)."
-                  : "La connexion n'a pas abouti. Réessayez."}
+                  ? tr(
+                      "Ce compte Google n'a pas accès à l'espace (compte désactivé ou e-mail non vérifié).",
+                      "This Google account cannot access the client area (account disabled or email not verified).",
+                    )
+                  : tr("La connexion n'a pas abouti. Réessayez.", "Sign-in failed. Please try again.")}
               </Alerte>
             )}
 
@@ -121,13 +137,15 @@ export default async function PageConnexion({ searchParams }: PageProps<"/connex
                     className="flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-white font-medium text-encre ring-1 ring-bordure transition hover:bg-fond hover:ring-encre/30 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <LogoGoogle />
-                    Continuer avec Google
+                    {tr("Continuer avec Google", "Continue with Google")}
                   </button>
                 </form>
                 {!GOOGLE_CONFIGURE && (
                   <p className="text-sm text-encre-muette">
-                    La connexion Google sera disponible dès que les clés <code className="text-xs">AUTH_GOOGLE_ID</code> et{" "}
-                    <code className="text-xs">AUTH_GOOGLE_SECRET</code> seront configurées.
+                    {tr(
+                      "La connexion Google sera disponible dès que les clés AUTH_GOOGLE_ID et AUTH_GOOGLE_SECRET seront configurées.",
+                      "Google sign-in will be available once the AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET keys are configured.",
+                    )}
                   </p>
                 )}
                 {MODE_DEMO && (
@@ -136,12 +154,15 @@ export default async function PageConnexion({ searchParams }: PageProps<"/connex
                       type="submit"
                       className="h-12 w-full rounded-xl bg-encre font-medium text-white transition hover:bg-nuit"
                     >
-                      Visiter l&apos;espace client de démonstration
+                      {tr("Visiter l'espace client de démonstration", "Try the demo client area")}
                     </button>
                   </form>
                 )}
                 <p className="pt-2 text-sm text-encre-muette">
-                  Pas encore de compte ? Il est créé automatiquement à votre première connexion avec Google.
+                  {tr(
+                    "Pas encore de compte ? Il est créé automatiquement à votre première connexion avec Google.",
+                    "No account yet? It is created automatically the first time you sign in with Google.",
+                  )}
                 </p>
               </>
             ) : (
@@ -149,16 +170,16 @@ export default async function PageConnexion({ searchParams }: PageProps<"/connex
                 <FormulaireEquipe redirection={redirection} emailInitial={emailInitial} />
                 {MODE_DEMO && (
                   <div className="rounded-xl bg-fond p-4 text-sm text-encre-douce">
-                    <p className="font-medium text-encre">Comptes de test</p>
+                    <p className="font-medium text-encre">{tr("Comptes de test", "Test accounts")}</p>
                     <dl className="mt-2 space-y-2">
                       <div>
-                        <dt>Super-administrateur</dt>
+                        <dt>{tr("Super-administrateur", "Super administrator")}</dt>
                         <dd className="font-mono text-xs text-encre">
                           {COMPTES_DEMO.admin.email} / {COMPTES_DEMO.admin.motDePasse}
                         </dd>
                       </div>
                       <div>
-                        <dt>Designer (accès limité)</dt>
+                        <dt>{tr("Designer (accès limité)", "Designer (limited access)")}</dt>
                         <dd className="font-mono text-xs text-encre">
                           {COMPTES_DEMO.designer.email} / {COMPTES_DEMO.designer.motDePasse}
                         </dd>

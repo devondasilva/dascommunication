@@ -58,10 +58,16 @@ export default async function PageServicesAdmin() {
                       <Link href={`/dashboard/services/${s.id}`} className="font-medium text-encre hover:underline">
                         {s.nom}
                       </Link>
-                      <p className="text-xs text-encre-muette">{s.delaiJours} jours · /{s.slug}</p>
+                      <p className="text-xs text-encre-muette">
+                        {s.delaiJours} jours · /{s.slug}
+                        {!s.nomEn && <span className="ml-1.5 font-medium text-amber-800">· anglais à compléter</span>}
+                      </p>
                     </td>
                     <td className="hidden px-3 py-3 text-encre-douce md:table-cell">{LIBELLES_CATEGORIE[s.categorie]}</td>
-                    <td className="px-3 py-3 text-right tabular-nums text-encre">{formaterMontant(s.prixDepart)}</td>
+                    <td className="px-3 py-3 text-right tabular-nums text-encre">
+                      {formaterMontant(s.prixDepart)}
+                      {s.prixUsd != null && <p className="text-xs text-encre-muette">{formaterMontant(s.prixUsd, "USD")}</p>}
+                    </td>
                     <td className="hidden px-3 py-3 text-right tabular-nums text-encre-douce sm:table-cell">{s.nbCommandes}</td>
                     <td className="px-3 py-3">
                       <form action={basculerService}>

@@ -1,6 +1,8 @@
 "use server";
 
 import { AuthError } from "next-auth";
+import { lienLocal } from "@/i18n/commun";
+import { langueRequete } from "@/i18n/serveur";
 import { signIn, signOut } from "@/auth";
 import { journaliser } from "@/lib/audit";
 import { utilisateurConnecte } from "@/lib/auth";
@@ -60,15 +62,16 @@ export async function connexionEquipe(_: EtatConnexion, formData: FormData): Pro
 }
 
 export async function connexionGoogle(formData: FormData) {
-  await signIn("google", { redirectTo: cibleSure(formData.get("redirection"), "/espace") });
+  const langue = await langueRequete();
+  await signIn("google", { redirectTo: cibleSure(formData.get("redirection"), lienLocal(langue, "/espace")) });
 }
 
 export async function connexionClientDemo() {
-  await signIn("client-demo", { redirectTo: "/espace" });
+  await signIn("client-demo", { redirectTo: lienLocal(await langueRequete(), "/espace") });
 }
 
 export async function deconnexion() {
   const c = await utilisateurConnecte();
   if (c) await journaliser({ id: c.utilisateur.id, email: c.utilisateur.email }, "deconnexion");
-  await signOut({ redirectTo: "/" });
+  await signOut({ redirectTo: lienLocal(await langueRequete(), "/") });
 }

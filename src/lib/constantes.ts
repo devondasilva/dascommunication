@@ -12,7 +12,6 @@ export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "dascom2004@gmail.com",
   telephone: process.env.NEXT_PUBLIC_CONTACT_TELEPHONE ?? "",
-  devise: process.env.NEXT_PUBLIC_DEVISE ?? "XOF",
   presence: ["Maryland", "Virginia", "Bénin"],
   reseaux: {
     linkedin: "https://www.linkedin.com/in/honore-da-silva-b02561194",

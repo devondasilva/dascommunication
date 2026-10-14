@@ -6,6 +6,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { utilisateurs } from "@/db/schema";
+import { creerTr, lienLocal } from "@/i18n/commun";
+import { langueRequete } from "@/i18n/serveur";
 import { journaliser } from "@/lib/audit";
 import { acteur, utilisateurConnecte } from "@/lib/auth";
 import { nouveauSecret2fa, verifierCode2fa } from "@/lib/deux-facteurs";
@@ -25,21 +27,28 @@ const NON_CONNECTE: EtatFormulaire = { message: "Votre session a expiré. Reconn
 /* ------------------------------------------------------------------ */
 
 export async function enregistrerProfil(_: EtatFormulaire, formData: FormData): Promise<EtatFormulaire> {
+  const langue = await langueRequete();
+  const tr = creerTr(langue);
   const c = await utilisateurConnecte();
-  if (!c) return NON_CONNECTE;
+  if (!c) return { message: tr(NON_CONNECTE.message!, "Your session has expired. Please sign in again.") };
 
   const parse = schemaProfilClient.safeParse(Object.fromEntries(formData));
   if (!parse.success) {
-    return { message: "Merci de corriger les champs indiqués.", erreurs: erreursDe(parse.error), valeurs: valeursDe(formData) };
+    return {
+      message: tr("Merci de corriger les champs indiqués.", "Please correct the highlighted fields."),
+      erreurs: erreursDe(parse.error, langue),
+      valeurs: valeursDe(formData),
+    };
   }
   await db
     .update(utilisateurs)
     .set({ ...parse.data, entreprise: parse.data.entreprise ?? null, profilComplet: true })
     .where(eq(utilisateurs.id, c.utilisateur.id));
   revalidatePath("/espace", "layout");
+  revalidatePath("/en/espace", "layout");
   // Depuis l'accueil de l'espace (première connexion), on revient avec une confirmation
-  if (formData.get("retour") === "accueil") redirect("/espace?profil=ok");
-  return { ok: true, message: "Profil enregistré." };
+  if (formData.get("retour") === "accueil") redirect(lienLocal(langue, "/espace?profil=ok"));
+  return { ok: true, message: tr("Profil enregistré.", "Profile saved.") };
 }
 
 /* ------------------------------------------------------------------ */

@@ -5,6 +5,7 @@ import {
   PRIORITES,
   STATUTS_COMMANDE,
   STATUTS_MODIFICATION,
+  type Langue,
 } from "@/lib/enums";
 
 /** Champ texte optionnel : une chaîne vide devient `undefined`. */
@@ -15,6 +16,24 @@ const optionnel = (max: number) =>
     .max(max, `${max} caractères maximum`)
     .transform((v) => (v === "" ? undefined : v))
     .optional();
+
+/** Champ texte facultatif qui peut être vidé : une chaîne vide devient `null`. */
+const effacable = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max, `${max} caractères maximum`)
+    .optional()
+    .transform((v) => (v ? v : null));
+
+/** Montant facultatif : vide = `null` (ex. prix en dollars non saisi → conversion automatique). */
+const montantFacultatif = z
+  .string()
+  .trim()
+  .optional()
+  .transform((v) => (v ?? "").replace(/[\s  $,]/g, ""))
+  .refine((v) => v === "" || /^\d+$/.test(v), "Montant invalide (nombre entier)")
+  .transform((v) => (v === "" ? null : Number(v)));
 
 export const schemaCommande = z.object({
   serviceId: z.coerce.number({ message: "Choisissez un service" }).int().positive("Choisissez un service"),
@@ -90,8 +109,13 @@ export const schemaService = z.object({
   description: z.string().trim().min(20, "Description trop courte").max(4000),
   livrables: z.string().trim().max(2000).default(""),
   prixDepart: z.coerce.number({ message: "Prix invalide" }).int().min(0, "Prix invalide"),
+  prixUsd: montantFacultatif,
   delaiJours: z.coerce.number({ message: "Délai invalide" }).int().min(1, "1 jour minimum").max(365),
   ordre: z.coerce.number().int().min(0).default(0),
+  nomEn: effacable(120),
+  resumeEn: effacable(200),
+  descriptionEn: effacable(4000),
+  livrablesEn: effacable(2000),
   actif: z
     .string()
     .optional()
@@ -106,8 +130,33 @@ export type EtatFormulaire = {
   valeurs?: Record<string, string>;
 };
 
-export function erreursDe(error: z.ZodError): EtatFormulaire["erreurs"] {
-  return z.flattenError(error).fieldErrors as EtatFormulaire["erreurs"];
+/** Messages d'erreur des formulaires publics, en anglais. */
+const MESSAGES_EN: Record<string, string> = {
+  "Choisissez un service": "Choose a service",
+  "Indiquez votre nom complet": "Enter your full name",
+  "Adresse e-mail invalide": "Invalid email address",
+  "Décrivez votre projet en quelques phrases (20 caractères minimum)": "Describe your project in a few sentences (20 characters minimum)",
+  "4 000 caractères maximum": "4,000 characters maximum",
+  "3 000 caractères maximum": "3,000 characters maximum",
+  "Vous devez accepter d'être recontacté": "Please agree to be contacted",
+  "Format attendu : CMD-2026-0001": "Expected format: CMD-2026-0001",
+  "Décrivez la modification souhaitée (10 caractères minimum)": "Describe the change you need (10 characters minimum)",
+  "Mot de passe requis": "Password required",
+  "Indiquez un numéro de téléphone ou WhatsApp": "Enter a phone or WhatsApp number",
+  "Indiquez votre pays": "Enter your country",
+};
+
+export function traduireMessage(message: string, langue: Langue = "fr") {
+  if (langue === "fr") return message;
+  if (MESSAGES_EN[message]) return MESSAGES_EN[message];
+  const max = /^(\d+) caractères maximum$/.exec(message)?.[1];
+  return max ? `${max} characters maximum` : message;
+}
+
+export function erreursDe(error: z.ZodError, langue: Langue = "fr"): EtatFormulaire["erreurs"] {
+  const erreurs = z.flattenError(error).fieldErrors as Record<string, string[]>;
+  if (langue === "fr") return erreurs;
+  return Object.fromEntries(Object.entries(erreurs).map(([k, v]) => [k, v.map((m) => traduireMessage(m, langue))]));
 }
 
 /** Conserve les saisies pour réafficher le formulaire en cas d'erreur. */
@@ -207,6 +256,9 @@ export const schemaRealisation = z.object({
   client: optionnel(120),
   secteur: optionnel(120),
   description: optionnel(2000),
+  titreEn: effacable(140),
+  secteurEn: effacable(120),
+  descriptionEn: effacable(2000),
   lien: z
     .string()
     .trim()
@@ -234,8 +286,9 @@ export const schemaRealisation = z.object({
     .transform((v) => v === "on"),
 });
 
-/** Prix et délai d'un service, saisis dans l'écran « Tarifs ». */
+/** Prix (F CFA et dollars) et délai d'un service, saisis dans l'écran « Tarifs ». */
 export const schemaTarif = z.object({
+  usd: montantFacultatif,
   prix: z
     .string()
     .trim()

@@ -4,10 +4,11 @@
  * Idempotent : peut être relancé sans créer de doublons.
  */
 import { randomBytes } from "node:crypto";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { hacherMotDePasse } from "@/lib/mot-de-passe";
 import { ROLES_PAR_DEFAUT } from "@/lib/permissions";
 import { REALISATIONS_INITIALES } from "./realisations-initiales";
+import { REALISATIONS_EN, SERVICES_EN } from "./traductions-initiales";
 import * as schema from "./schema";
 import type { BaseDeDonnees } from "./types";
 
@@ -265,9 +266,23 @@ export async function peupler(db: BaseDeDonnees, { demo }: { demo: boolean }) {
     }
   }
 
+  // 5. Version anglaise des contenus d'origine (sans écraser une traduction saisie)
+  for (const [slug, t] of Object.entries(SERVICES_EN)) {
+    await db
+      .update(schema.services)
+      .set({ nomEn: t.nom, resumeEn: t.resume, descriptionEn: t.description, livrablesEn: t.livrables })
+      .where(and(eq(schema.services.slug, slug), isNull(schema.services.nomEn)));
+  }
+  for (const [slug, t] of Object.entries(REALISATIONS_EN)) {
+    await db
+      .update(schema.realisations)
+      .set({ titreEn: t.titre, descriptionEn: t.description ?? null, secteurEn: t.secteur ?? null })
+      .where(and(eq(schema.realisations.slug, slug), isNull(schema.realisations.titreEn)));
+  }
+
   if (!demo) return;
 
-  // 5. Démo : un membre « designer » pour tester les permissions
+  // 6. Démo : un membre « designer » pour tester les permissions
   const designer = await db.query.utilisateurs.findFirst({
     where: eq(schema.utilisateurs.email, COMPTES_DEMO.designer.email),
     columns: { id: true },
@@ -284,7 +299,7 @@ export async function peupler(db: BaseDeDonnees, { demo }: { demo: boolean }) {
     });
   }
 
-  // 6. Démo : commandes fictives
+  // 7. Démo : commandes fictives
   const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(schema.commandes);
   if (n > 0) return;
 
@@ -299,6 +314,7 @@ export async function peupler(db: BaseDeDonnees, { demo }: { demo: boolean }) {
     montant: number | null;
     jours: number;
     brief: string;
+    en?: boolean;
   }> = [
     { slug: "identite-visuelle", nom: "Aïcha Kossou", entreprise: "Saveurs du Golfe", statut: "livree", montant: 275000, jours: 160, brief: "Création du logo et de la charte pour notre restaurant à Cotonou." },
     { slug: "community-management", nom: "Marc Hounkpè", entreprise: "Hounkpè Immobilier", statut: "livree", montant: 150000, jours: 120, brief: "Animation de nos pages Facebook et Instagram pendant 3 mois." },
@@ -310,6 +326,7 @@ export async function peupler(db: BaseDeDonnees, { demo }: { demo: boolean }) {
     { slug: "video-motion-design", nom: "Serge Ahouandjinou", entreprise: "Festival Vodun Arts", statut: "nouvelle", montant: null, jours: 3, brief: "Teaser vidéo de 30 secondes pour annoncer la prochaine édition du festival." },
     { slug: "identite-visuelle", nom: "Esther Zinsou", entreprise: "Beach Club Fidjrossè", statut: "nouvelle", montant: null, jours: 1, brief: "Logo et charte pour un club de plage, ambiance sportive et conviviale." },
     { slug: "supports-print", nom: "Rodrigue Kpadé", entreprise: "Pharmacie du Port", statut: "annulee", montant: null, jours: 50, brief: "Cartes de visite pour l'équipe." },
+    { slug: "creation-site-web", nom: "Jordan Miller", entreprise: "Chesapeake Tennis Academy", statut: "en_cours", montant: 1450, jours: 9, brief: "Website for our tennis academy in Maryland: programs, coaches, online sign-up for summer camps.", en: true },
   ];
 
   let numero = 1;
@@ -325,17 +342,21 @@ export async function peupler(db: BaseDeDonnees, { demo }: { demo: boolean }) {
         serviceNom: service.nom,
         clientNom: d.nom,
         clientEmail: `${d.nom.split(" ")[0].toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")}@example.com`,
-        clientTelephone: "+229 97 00 00 00",
+        clientTelephone: d.en ? "+1 301 555 0142" : "+229 97 00 00 00",
         entreprise: d.entreprise,
         brief: d.brief,
         statut: d.statut,
         montant: d.montant,
+        langue: d.en ? "en" : "fr",
+        devise: d.en ? "USD" : "XOF",
         creeLe: date,
         majLe: date,
       })
       .returning();
 
-    await db.insert(schema.activites).values({ commandeId: cmd.id, message: "Commande reçue", creeLe: date });
+    await db
+      .insert(schema.activites)
+      .values({ commandeId: cmd.id, message: d.en ? "Order received" : "Commande reçue", creeLe: date });
 
     if (d.statut === "en_revision") {
       await db.insert(schema.modifications).values({

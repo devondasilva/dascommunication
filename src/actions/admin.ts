@@ -8,6 +8,8 @@ import { activites, commandes, modifications, services } from "@/db/schema";
 import { journaliser } from "@/lib/audit";
 import { acteur, autoriser } from "@/lib/auth";
 import { STATUT_COMMANDE, STATUT_MODIFICATION } from "@/lib/constantes";
+import { formaterPrix } from "@/i18n/commun";
+import { statutCommande, statutModification } from "@/i18n/libelles";
 import { formaterMontant } from "@/lib/format";
 import {
   erreursDe,
@@ -52,13 +54,19 @@ export async function mettreAJourCommande(_: EtatFormulaire, formData: FormData)
     if (avant.statut !== d.statut) {
       await tx.insert(activites).values({
         commandeId: d.id,
-        message: `Statut : ${STATUT_COMMANDE[d.statut].libelle}`,
+        message:
+          avant.langue === "en"
+            ? `Status: ${statutCommande(d.statut, "en").libelle}`
+            : `Statut : ${STATUT_COMMANDE[d.statut].libelle}`,
       });
     }
     if (avant.montant !== d.montant && d.montant != null) {
       await tx.insert(activites).values({
         commandeId: d.id,
-        message: `Montant fixé à ${formaterMontant(d.montant)}`,
+        message:
+          avant.langue === "en"
+            ? `Amount set to ${formaterPrix(d.montant, avant.devise, "en")}`
+            : `Montant fixé à ${formaterMontant(d.montant, avant.devise)}`,
       });
     }
     if (d.messageClient) {
@@ -72,6 +80,7 @@ export async function mettreAJourCommande(_: EtatFormulaire, formData: FormData)
   });
   rafraichir();
   revalidatePath(`/suivi/${avant.jetonSuivi}`);
+  revalidatePath(`/en/suivi/${avant.jetonSuivi}`);
   return { ok: true, message: "Commande mise à jour." };
 }
 
@@ -105,7 +114,7 @@ export async function mettreAJourModification(_: EtatFormulaire, formData: FormD
 
   const modif = await db.query.modifications.findFirst({
     where: eq(modifications.id, d.id),
-    with: { commande: { columns: { id: true, jetonSuivi: true, statut: true } } },
+    with: { commande: { columns: { id: true, jetonSuivi: true, statut: true, langue: true } } },
   });
   if (!modif) return { message: "Demande introuvable." };
 
@@ -118,7 +127,10 @@ export async function mettreAJourModification(_: EtatFormulaire, formData: FormD
     if (modif.statut !== d.statut) {
       await tx.insert(activites).values({
         commandeId: modif.commandeId,
-        message: `Demande de modification : ${STATUT_MODIFICATION[d.statut].libelle.toLowerCase()}`,
+        message:
+          modif.commande.langue === "en"
+            ? `Change request: ${statutModification(d.statut, "en").libelle.toLowerCase()}`
+            : `Demande de modification : ${STATUT_MODIFICATION[d.statut].libelle.toLowerCase()}`,
       });
     }
 
@@ -140,7 +152,10 @@ export async function mettreAJourModification(_: EtatFormulaire, formData: FormD
           .where(eq(commandes.id, modif.commandeId));
         await tx.insert(activites).values({
           commandeId: modif.commandeId,
-          message: `Statut : ${STATUT_COMMANDE.en_cours.libelle}`,
+          message:
+            modif.commande.langue === "en"
+              ? `Status: ${statutCommande("en_cours", "en").libelle}`
+              : `Statut : ${STATUT_COMMANDE.en_cours.libelle}`,
         });
       }
     }
@@ -149,6 +164,7 @@ export async function mettreAJourModification(_: EtatFormulaire, formData: FormD
   await journaliser(acteur(c), "modification.traitee", `#${d.id}`, { statut: d.statut });
   rafraichir();
   revalidatePath(`/suivi/${modif.commande.jetonSuivi}`);
+  revalidatePath(`/en/suivi/${modif.commande.jetonSuivi}`);
   return { ok: true, message: "Demande mise à jour." };
 }
 

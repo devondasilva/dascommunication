@@ -39,13 +39,15 @@ export default async function PageCommande({ params }: PageProps<"/dashboard/com
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="font-mono text-xl font-semibold text-encre">{cmd.reference}</h1>
             <Badge ton={statut.ton}>{statut.libelle}</Badge>
+            {cmd.langue === "en" && <Badge ton="info">Client anglophone</Badge>}
+            {cmd.devise === "USD" && <Badge ton="neutre">Facturation en dollars</Badge>}
           </div>
           <p className="mt-1 text-sm text-encre-muette">
             {cmd.serviceNom} · reçue le {formaterDateHeure(cmd.creeLe)}
           </p>
         </div>
         <Link
-          href={`/suivi/${cmd.jetonSuivi}`}
+          href={cmd.langue === "en" ? `/en/suivi/${cmd.jetonSuivi}` : `/suivi/${cmd.jetonSuivi}`}
           target="_blank"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-marque-texte hover:underline"
         >

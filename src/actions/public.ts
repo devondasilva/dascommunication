@@ -5,6 +5,8 @@ import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
+import { deviseRequete, langueRequete } from "@/i18n/serveur";
+import { creerTr, lienLocal } from "@/i18n/commun";
 import { utilisateurConnecte } from "@/lib/auth";
 import { activites, commandes, modifications, services } from "@/db/schema";
 import {
@@ -25,12 +27,14 @@ const estUnRobot = (formData: FormData) => Boolean(formData.get("site_web"));
 
 export async function passerCommande(_: EtatFormulaire, formData: FormData): Promise<EtatFormulaire> {
   if (estUnRobot(formData)) return { ok: true };
+  const [langue, devise] = await Promise.all([langueRequete(), deviseRequete()]);
+  const tr = creerTr(langue);
 
   const parse = schemaCommande.safeParse(Object.fromEntries(formData));
   if (!parse.success) {
     return {
-      message: "Merci de corriger les champs indiqués.",
-      erreurs: erreursDe(parse.error),
+      message: tr("Merci de corriger les champs indiqués.", "Please correct the highlighted fields."),
+      erreurs: erreursDe(parse.error, langue),
       valeurs: valeursDe(formData),
     };
   }
@@ -41,8 +45,8 @@ export async function passerCommande(_: EtatFormulaire, formData: FormData): Pro
   });
   if (!service) {
     return {
-      message: "Ce service n'est plus disponible.",
-      erreurs: { serviceId: ["Choisissez un autre service"] },
+      message: tr("Ce service n'est plus disponible.", "This service is no longer available."),
+      erreurs: { serviceId: [tr("Choisissez un autre service", "Choose another service")] },
       valeurs: valeursDe(formData),
     };
   }
@@ -68,18 +72,20 @@ export async function passerCommande(_: EtatFormulaire, formData: FormData): Pro
         brief: d.brief,
         budget: d.budget,
         dateSouhaitee: d.dateSouhaitee,
+        devise,
+        langue,
       })
       .returning({ id: commandes.id });
 
     // Référence lisible basée sur l'identifiant : unique et séquentielle
     const reference = `CMD-${new Date().getFullYear()}-${String(cmd.id).padStart(4, "0")}`;
     await tx.update(commandes).set({ reference }).where(eq(commandes.id, cmd.id));
-    await tx.insert(activites).values({ commandeId: cmd.id, message: "Commande reçue" });
+    await tx.insert(activites).values({ commandeId: cmd.id, message: tr("Commande reçue", "Order received") });
   });
 
   revalidatePath("/dashboard", "layout");
   revalidatePath("/espace");
-  redirect(`/suivi/${jetonSuivi}?nouvelle=1`);
+  redirect(lienLocal(langue, `/suivi/${jetonSuivi}?nouvelle=1`));
 }
 
 /* ------------------------------------------------------------------ */
@@ -87,9 +93,10 @@ export async function passerCommande(_: EtatFormulaire, formData: FormData): Pro
 /* ------------------------------------------------------------------ */
 
 export async function rechercherCommande(_: EtatFormulaire, formData: FormData): Promise<EtatFormulaire> {
+  const langue = await langueRequete();
   const parse = schemaRechercheSuivi.safeParse(Object.fromEntries(formData));
   if (!parse.success) {
-    return { erreurs: erreursDe(parse.error), valeurs: valeursDe(formData) };
+    return { erreurs: erreursDe(parse.error, langue), valeurs: valeursDe(formData) };
   }
 
   const cmd = await db.query.commandes.findFirst({
@@ -100,12 +107,15 @@ export async function rechercherCommande(_: EtatFormulaire, formData: FormData):
   if (!cmd) {
     // Message volontairement générique : on ne révèle pas si la référence existe
     return {
-      message: "Aucune commande ne correspond à cette référence et cette adresse e-mail.",
+      message: creerTr(langue)(
+        "Aucune commande ne correspond à cette référence et cette adresse e-mail.",
+        "No order matches this reference and email address.",
+      ),
       valeurs: valeursDe(formData),
     };
   }
 
-  redirect(`/suivi/${cmd.jetonSuivi}`);
+  redirect(lienLocal(langue, `/suivi/${cmd.jetonSuivi}`));
 }
 
 /* ------------------------------------------------------------------ */
@@ -114,19 +124,26 @@ export async function rechercherCommande(_: EtatFormulaire, formData: FormData):
 
 export async function demanderModification(_: EtatFormulaire, formData: FormData): Promise<EtatFormulaire> {
   if (estUnRobot(formData)) return { ok: true };
+  const langue = await langueRequete();
+  const tr = creerTr(langue);
 
   const parse = schemaDemandeModification.safeParse(Object.fromEntries(formData));
   if (!parse.success) {
-    return { erreurs: erreursDe(parse.error), valeurs: valeursDe(formData) };
+    return { erreurs: erreursDe(parse.error, langue), valeurs: valeursDe(formData) };
   }
 
   const cmd = await db.query.commandes.findFirst({
     where: eq(commandes.jetonSuivi, parse.data.jeton),
     columns: { id: true, statut: true },
   });
-  if (!cmd) return { message: "Commande introuvable." };
+  if (!cmd) return { message: tr("Commande introuvable.", "Order not found.") };
   if (cmd.statut === "annulee") {
-    return { message: "Cette commande est annulée : impossible de demander une modification." };
+    return {
+      message: tr(
+        "Cette commande est annulée : impossible de demander une modification.",
+        "This order has been cancelled: changes can no longer be requested.",
+      ),
+    };
   }
 
   await db.transaction(async (tx) => {
@@ -144,11 +161,18 @@ export async function demanderModification(_: EtatFormulaire, formData: FormData
     }
     await tx.insert(activites).values({
       commandeId: cmd.id,
-      message: "Demande de modification envoyée",
+      message: tr("Demande de modification envoyée", "Change request sent"),
     });
   });
 
   revalidatePath(`/suivi/${parse.data.jeton}`);
+  revalidatePath(`/en/suivi/${parse.data.jeton}`);
   revalidatePath("/dashboard", "layout");
-  return { ok: true, message: "Votre demande a bien été envoyée. Nous revenons vers vous rapidement." };
+  return {
+    ok: true,
+    message: tr(
+      "Votre demande a bien été envoyée. Nous revenons vers vous rapidement.",
+      "Your request has been sent. We will get back to you shortly.",
+    ),
+  };
 }

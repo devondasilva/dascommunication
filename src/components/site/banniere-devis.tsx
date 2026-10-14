@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { ImageVisuel } from "@/components/image-visuel";
+import { i18n } from "@/i18n/serveur";
 import { affichesPourMur } from "@/lib/donnees";
-import { partiesMontant } from "@/lib/format";
 import { parametresSite } from "@/lib/parametres";
 import { cx } from "@/components/ui";
 
@@ -16,12 +16,20 @@ const POSITIONS = [
 /**
  * Bannière d'appel au devis : promesse, réassurance et vraies affiches DAS COM.
  * Textes modifiables dans Dashboard → Paramètres ; affiches = visuels mis en avant.
+ * `prixMin` est exprimé dans la devise affichée au visiteur.
  */
 export async function BanniereDevis({ prixMin, className }: { prixMin?: number; className?: string }) {
-  const prix = prixMin ? partiesMontant(prixMin) : null;
-  const [p, misesEnAvant, toutes] = await Promise.all([parametresSite(), affichesPourMur(3, { misEnAvant: true }), affichesPourMur(3)]);
+  const [p, misesEnAvant, toutes, { langue, tr, l, fmtPrix }] = await Promise.all([
+    parametresSite(),
+    affichesPourMur(3, { misEnAvant: true }),
+    affichesPourMur(3),
+    i18n(),
+  ]);
+  const en = langue === "en";
+  const accroche = en ? p.banniereAccrocheEn : p.banniereAccroche;
+  const titre = (en && p.banniereTitreEn) || p.banniereTitre;
   const affiches = (misesEnAvant.length === 3 ? misesEnAvant : toutes).map((img, i) => ({ ...img, ...POSITIONS[i] }));
-  const argumentsBanniere = p.banniereArguments
+  const argumentsBanniere = ((en && p.banniereArgumentsEn) || p.banniereArguments)
     .split("\n")
     .map((a) => a.trim())
     .filter(Boolean);
@@ -36,14 +44,14 @@ export async function BanniereDevis({ prixMin, className }: { prixMin?: number; 
 
       <div className="relative grid gap-10 px-6 py-12 sm:px-10 md:py-16 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:px-14">
         <div className="flex flex-col justify-center">
-          {p.banniereAccroche && (
+          {accroche && (
             <p className="mb-5 flex items-center gap-2 text-sm text-marque">
               <span aria-hidden className="size-2 rounded-full bg-marque" />
-              {p.banniereAccroche}
+              {accroche}
             </p>
           )}
           <h2 id="titre-banniere" className="text-4xl leading-[1.02] font-semibold md:text-5xl">
-            {p.banniereTitre}
+            {titre}
           </h2>
 
           <ul className="mt-7 space-y-2.5">
@@ -59,16 +67,16 @@ export async function BanniereDevis({ prixMin, className }: { prixMin?: number; 
 
           <div className="mt-9 flex flex-wrap items-center gap-4">
             <Link
-              href="/commander"
+              href={l("/commander")}
               className="inline-flex h-13 items-center rounded-md bg-marque px-7 text-lg font-medium text-nuit transition hover:bg-white"
             >
-              Demander mon devis
+              {tr("Demander mon devis", "Get my quote")}
             </Link>
-            {prix && (
+            {prixMin != null && (
               <p className="text-white/70">
-                Prestations dès{" "}
+                {tr("Prestations dès", "Services from")}{" "}
                 <span className="font-titre text-xl font-bold whitespace-nowrap text-white tabular-nums">
-                  {prix.nombre} {prix.devise}
+                  {fmtPrix(prixMin)}
                 </span>
               </p>
             )}

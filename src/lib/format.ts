@@ -1,10 +1,5 @@
-import { SITE } from "./constantes";
-
-const fmtMontant = new Intl.NumberFormat("fr-FR", {
-  style: "currency",
-  currency: SITE.devise,
-  maximumFractionDigits: 0,
-});
+import { formaterPrix } from "@/i18n/commun";
+import type { Devise } from "./enums";
 
 const fmtNombre = new Intl.NumberFormat("fr-FR");
 
@@ -24,8 +19,8 @@ const fmtDateHeure = new Intl.DateTimeFormat("fr-FR", {
 
 const fmtRelatif = new Intl.RelativeTimeFormat("fr-FR", { numeric: "auto" });
 
-export const formaterMontant = (v: number | null | undefined) =>
-  v == null ? "—" : fmtMontant.format(v);
+/** Montant en français (dashboard), en F CFA par défaut ou dans la devise de la commande. */
+export const formaterMontant = (v: number | null | undefined, devise: Devise = "XOF") => formaterPrix(v, devise, "fr");
 
 export const formaterNombre = (v: number) => fmtNombre.format(v);
 
@@ -47,15 +42,3 @@ export function formaterRelatif(d: Date) {
 
 export const pluriel = (n: number, singulier: string, plurielMot = `${singulier}s`) =>
   `${formaterNombre(n)} ${n > 1 ? plurielMot : singulier}`;
-
-/** Sépare le nombre et la devise pour les mettre en forme différemment (ex. « 250 000 » + « F CFA »). */
-export function partiesMontant(v: number) {
-  const parties = fmtMontant.formatToParts(v);
-  const devise = parties.find((p) => p.type === "currency")?.value ?? "";
-  const nombre = parties
-    .filter((p) => p.type !== "currency")
-    .map((p) => p.value)
-    .join("")
-    .trim();
-  return { nombre, devise };
-}

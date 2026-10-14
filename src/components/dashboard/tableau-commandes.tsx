@@ -70,7 +70,7 @@ export function TableauCommandes({
                   </div>
                 </td>
                 {montants && (
-                  <td className="hidden py-3 pr-4 text-right tabular-nums text-encre sm:table-cell">{formaterMontant(c.montant)}</td>
+                  <td className="hidden py-3 pr-4 text-right tabular-nums text-encre sm:table-cell">{formaterMontant(c.montant, c.devise)}</td>
                 )}
                 <td className="hidden py-3 text-right text-xs whitespace-nowrap text-encre-muette sm:table-cell">
                   {formaterRelatif(c.creeLe)}

@@ -1,5 +1,8 @@
+"use client";
+
 import { SITE } from "@/lib/constantes";
 import { cx } from "@/components/ui";
+import { useI18n } from "@/i18n/client";
 
 const ICONES = {
   linkedin: (
@@ -19,6 +22,7 @@ type Liens = Partial<Record<keyof typeof NOMS, string>>;
 
 /** Icônes des réseaux sociaux renseignés dans Dashboard → Paramètres (les liens vides sont masqués). */
 export function Reseaux({ liens, clair = false }: { liens: Liens; clair?: boolean }) {
+  const { tr } = useI18n();
   const presents = (Object.keys(NOMS) as (keyof typeof NOMS)[]).filter((r) => liens[r]);
   if (presents.length === 0) return null;
   return (
@@ -29,7 +33,7 @@ export function Reseaux({ liens, clair = false }: { liens: Liens; clair?: boolea
             href={liens[r]}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`${SITE.nom} sur ${NOMS[r]}`}
+            aria-label={`${SITE.nom} ${tr("sur", "on")} ${NOMS[r]}`}
             className={cx(
               "grid size-9 place-items-center rounded-lg transition-colors",
               clair ? "bg-white/10 text-white/80 hover:bg-marque hover:text-encre" : "bg-fond text-encre-douce hover:bg-encre hover:text-white",

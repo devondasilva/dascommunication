@@ -20,6 +20,8 @@ Site, portfolio, espace client et dashboard de **DAS Communication** : marketing
 | **Réalisations (portfolio)** | Ajout de projets par catégorie (logos, web, visuels, édition) depuis le dashboard : glisser-déposer de plusieurs visuels, redimensionnement automatique en WebP, couverture, ordre, textes alternatifs, publication et mise en avant sur l'accueil |
 | **Tarifs** | Prix de départ et délais de tous les services sur un seul écran, enregistrement groupé, historique dans le journal |
 | **Paramètres du site** | E-mail, téléphone, WhatsApp, réseaux sociaux, textes de la bannière devis : modifiables sans toucher au code |
+| **Français et anglais** | Tout le site public, l'espace client et le suivi de commande en anglais sous `/en` (`/en/services`…), sélecteur de langue, balises hreflang et sitemap bilingue. Textes anglais des services, réalisations et bannière saisis dans le dashboard (le français s'affiche si l'anglais est vide) |
+| **Prix en dollars** | Le visiteur choisit F CFA ou dollars (dollars par défaut en anglais). Prix en dollars saisis dans Tarifs, ou convertis automatiquement au taux des Paramètres. Chaque commande garde sa devise et sa langue : l'équipe facture et répond dans les bonnes |
 | **Sécurité** | Journal d'audit, en-têtes HTTP de sécurité, jetons d'invitation hachés, redirections contrôlées |
 
 <table>
@@ -56,6 +58,13 @@ Ouvrez http://localhost:3000. Sans `DATABASE_URL`, le **mode démo** s'active : 
 4. Déployez. Le script `vercel-build` applique les migrations et crée le super-administrateur avant le build.
 
 > Sans `DATABASE_URL`, un déploiement Vercel fonctionne aussi, en **mode démo** : pratique pour prévisualiser, mais les données sont temporaires et propres à chaque instance.
+
+## Langues et devises
+
+- **Adresses** : français à la racine (`/services`), anglais sous `/en` (`/en/services`). Le fichier `src/proxy.ts` retire le préfixe et transmet la langue ; une seule arborescence de pages sert les deux langues. Le dashboard reste en français.
+- **Textes de l'interface** : écrits côte à côte dans le code, `tr("Demander un devis", "Get a quote")` (outils dans `src/i18n/`).
+- **Contenus** : champs « Version anglaise » des formulaires Services et Réalisations, colonnes anglaises de la bannière dans Paramètres. Les listes du dashboard signalent ce qui reste à traduire.
+- **Dollars** : colonne « Prix ($ US) » dans Tarifs ; vide = conversion au taux de Paramètres → Prix en dollars (600 F CFA pour 1 $ par défaut), arrondie. Le chiffre d'affaires du tableau de bord additionne tout en F CFA à ce taux.
 
 ## Stockage des visuels
 

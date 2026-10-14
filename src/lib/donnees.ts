@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, count, desc, eq, gte, ilike, inArray, isNull, or, sql, sum } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, ilike, inArray, isNull, or, sql } from "drizzle-orm";
 import { connection } from "next/server";
 import { db } from "@/db";
 import {
@@ -17,6 +17,7 @@ import {
   type StatutModification,
 } from "@/db/schema";
 import type { CategorieRealisation } from "@/lib/enums";
+import { parametresSite, tauxUsd } from "@/lib/parametres";
 
 /**
  * Toutes les lectures se font à la requête (données toujours à jour,
@@ -80,17 +81,20 @@ export async function statistiques() {
   await connection();
   const debutMois = debutDuMois();
   const debut6Mois = debutDuMois(-5);
+  // Les commandes en dollars sont ramenées en F CFA au taux des paramètres
+  const taux = tauxUsd(await parametresSite());
+  const totalXof = sql<string>`sum(case when ${commandes.devise} = 'USD' then ${commandes.montant} * ${taux}::numeric else ${commandes.montant} end)`;
 
   const [parStatut, [caMois], [caTotal], [enCoursMontant], [modifsAttente], parMoisBrut, topServices] =
     await Promise.all([
       db.select({ statut: commandes.statut, n: count() }).from(commandes).groupBy(commandes.statut),
       db
-        .select({ total: sum(commandes.montant) })
+        .select({ total: totalXof })
         .from(commandes)
         .where(and(eq(commandes.statut, "livree"), gte(commandes.majLe, debutMois))),
-      db.select({ total: sum(commandes.montant) }).from(commandes).where(eq(commandes.statut, "livree")),
+      db.select({ total: totalXof }).from(commandes).where(eq(commandes.statut, "livree")),
       db
-        .select({ total: sum(commandes.montant) })
+        .select({ total: totalXof })
         .from(commandes)
         .where(inArray(commandes.statut, ["en_cours", "en_revision"])),
       db.select({ n: count() }).from(modifications).where(eq(modifications.statut, "en_attente")),
