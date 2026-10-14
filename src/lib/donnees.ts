@@ -308,3 +308,16 @@ export async function journal(limite = 100) {
   await connection();
   return db.query.journalAudit.findMany({ orderBy: [desc(journalAudit.creeLe), desc(journalAudit.id)], limit: limite });
 }
+
+/** Services les plus commandés (au moins 2 commandes non annulées), pour le badge « Le plus demandé ». */
+export async function idsServicesPopulaires(limite = 2) {
+  await connection();
+  const lignes = await db
+    .select({ serviceId: commandes.serviceId, n: count() })
+    .from(commandes)
+    .where(sql`${commandes.statut} != 'annulee' and ${commandes.serviceId} is not null`)
+    .groupBy(commandes.serviceId)
+    .orderBy(desc(count()))
+    .limit(limite);
+  return new Set(lignes.filter((l) => l.n >= 2).map((l) => l.serviceId!));
+}

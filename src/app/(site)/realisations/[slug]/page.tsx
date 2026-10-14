@@ -69,7 +69,7 @@ export default async function PageRealisation({ params }: PageProps<"/realisatio
 
       <div
         className={cx(
-          "relative mt-12 overflow-hidden rounded-3xl ring-1 ring-bordure",
+          "relative mt-12 overflow-hidden rounded-lg ring-1 ring-bordure",
           estLogo ? "grid place-items-center bg-white py-16" : "bg-fond",
         )}
       >
@@ -122,7 +122,7 @@ export default async function PageRealisation({ params }: PageProps<"/realisatio
         </section>
       )}
 
-      <section className="mt-20 flex flex-col items-start justify-between gap-6 rounded-3xl bg-encre px-8 py-10 md:flex-row md:items-center md:px-10">
+      <section className="mt-20 flex flex-col items-start justify-between gap-6 rounded-lg bg-encre px-8 py-10 md:flex-row md:items-center md:px-10">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight text-white">Un projet similaire ?</h2>
           <p className="mt-1 text-white/70">Décrivez votre besoin, nous revenons vers vous sous 24 h ouvrées.</p>

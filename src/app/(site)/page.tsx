@@ -1,11 +1,11 @@
 import Link from "next/link";
+import { BanniereDevis } from "@/components/site/banniere-devis";
 import { CarteRealisation } from "@/components/site/carte-realisation";
+import { CarteService } from "@/components/site/carte-service";
 import { MurAffiches } from "@/components/site/mur-affiches";
 import { realisationsMisesEnAvant } from "@/data/realisations";
 import { CATEGORIES_SERVICE } from "@/lib/enums";
-import { LIBELLES_CATEGORIE } from "@/lib/constantes";
-import { servicesActifs } from "@/lib/donnees";
-import { formaterMontant } from "@/lib/format";
+import { idsServicesPopulaires, servicesActifs } from "@/lib/donnees";
 
 const ETAPES = [
   { titre: "Vous décrivez votre besoin", texte: "En ligne, en quelques minutes, depuis votre espace client." },
@@ -15,12 +15,14 @@ const ETAPES = [
 ];
 
 export default async function Accueil() {
-  const services = await servicesActifs();
+  const [services, populaires] = await Promise.all([servicesActifs(), idsServicesPopulaires()]);
   const vitrine = realisationsMisesEnAvant().slice(0, 6);
-  const domaines = CATEGORIES_SERVICE.map((cat) => {
-    const liste = services.filter((s) => s.categorie === cat);
-    return { cat, liste, prixMin: liste.length ? Math.min(...liste.map((s) => s.prixDepart)) : null };
-  }).filter((d) => d.liste.length > 0);
+  // Un service par domaine, en commençant par le plus demandé s'il y en a un
+  const vedettes = CATEGORIES_SERVICE.map(
+    (cat) =>
+      services.find((s) => s.categorie === cat && populaires.has(s.id)) ?? services.find((s) => s.categorie === cat),
+  ).filter((s) => s !== undefined);
+  const prixMin = services.length ? Math.min(...services.map((s) => s.prixDepart)) : undefined;
 
   return (
     <>
@@ -38,7 +40,7 @@ export default async function Accueil() {
             <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
               <Link
                 href="/commander"
-                className="inline-flex h-14 items-center rounded-full bg-marque px-8 text-lg font-medium text-nuit transition hover:bg-encre hover:text-white"
+                className="inline-flex h-14 items-center rounded-md bg-marque px-8 text-lg font-medium text-nuit transition hover:bg-encre hover:text-white"
               >
                 Demander un devis
               </Link>
@@ -55,41 +57,38 @@ export default async function Accueil() {
         </div>
       </section>
 
-      {/* ── Domaines d'expertise ──────────────────────────────── */}
+      {/* ── Services ──────────────────────────────────────────── */}
       <section aria-labelledby="titre-services" className="bg-fond">
         <div className="mx-auto max-w-7xl px-4 py-24 sm:px-8">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
-            <h2 id="titre-services" className="text-4xl font-semibold text-encre md:text-5xl">
-              Ce que nous faisons
-            </h2>
-            <p className="max-w-xl self-end text-lg text-encre-douce">
-              Une seule équipe pour votre image, votre visibilité et vos outils digitaux. Chaque prestation a un prix
-              de départ et un délai annoncés.
-            </p>
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-2xl">
+              <h2 id="titre-services" className="text-4xl font-semibold text-encre md:text-5xl">
+                Nos services, prix affichés
+              </h2>
+              <p className="mt-4 text-lg text-encre-douce">
+                Choisissez une prestation et commandez en ligne. Vous recevez un devis précis sous 24 heures ouvrées.
+              </p>
+            </div>
+            <Link
+              href="/services"
+              className="font-medium text-encre underline decoration-marque decoration-2 underline-offset-[6px] hover:decoration-encre"
+            >
+              Voir les {services.length} services
+            </Link>
           </div>
 
-          <ul className="mt-14 border-t border-encre/15">
-            {domaines.map(({ cat, liste, prixMin }) => (
-              <li key={cat} className="border-b border-encre/15">
-                <Link
-                  href={`/services?categorie=${cat}`}
-                  className="group grid gap-3 py-8 transition-colors md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_auto] md:items-baseline md:gap-10"
-                >
-                  <span className="font-titre text-3xl font-semibold tracking-tight text-encre transition-transform duration-300 ease-sortie group-hover:translate-x-2 md:text-4xl">
-                    {LIBELLES_CATEGORIE[cat]}
-                  </span>
-                  <span className="text-encre-douce">{liste.map((s) => s.nom).join(", ")}</span>
-                  {prixMin != null && (
-                    <span className="text-sm whitespace-nowrap text-encre-muette tabular-nums">
-                      dès {formaterMontant(prixMin)}
-                    </span>
-                  )}
-                </Link>
-              </li>
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {vedettes.map((s) => (
+              <CarteService key={s.id} service={s} populaire={populaires.has(s.id)} />
             ))}
-          </ul>
+          </div>
         </div>
       </section>
+
+      {/* ── Bannière devis ───────────────────────────────────── */}
+      <div className="mx-auto max-w-7xl px-4 pt-24 sm:px-8">
+        <BanniereDevis prixMin={prixMin} />
+      </div>
 
       {/* ── Réalisations ──────────────────────────────────────── */}
       <section aria-labelledby="titre-realisations">
@@ -135,7 +134,7 @@ export default async function Accueil() {
 
       {/* ── Appel à l'action ──────────────────────────────────── */}
       <section className="px-4 pb-6 sm:px-8">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-encre px-8 py-16 md:px-16 md:py-20">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-lg bg-encre px-8 py-16 md:px-16 md:py-20">
           <h2 className="max-w-3xl text-4xl font-semibold text-white md:text-6xl">
             Une marque à lancer, un événement à faire connaître ?
           </h2>
@@ -145,13 +144,13 @@ export default async function Accueil() {
           <div className="mt-10 flex flex-wrap gap-4">
             <Link
               href="/commander"
-              className="inline-flex h-14 items-center rounded-full bg-marque px-8 text-lg font-medium text-nuit transition hover:bg-white"
+              className="inline-flex h-14 items-center rounded-md bg-marque px-8 text-lg font-medium text-nuit transition hover:bg-white"
             >
               Demander un devis
             </Link>
             <Link
               href="/contact"
-              className="inline-flex h-14 items-center rounded-full px-8 text-lg font-medium text-white ring-1 ring-white/30 transition hover:ring-white"
+              className="inline-flex h-14 items-center rounded-md px-8 text-lg font-medium text-white ring-1 ring-white/30 transition hover:ring-white"
             >
               Nous écrire
             </Link>

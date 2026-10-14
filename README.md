@@ -8,7 +8,8 @@ Site, portfolio, espace client et dashboard de **DAS Communication** : marketing
 
 | Livré | Détail |
 | --- | --- |
-| **Nouveau design** | Typographie Bricolage Grotesque + Instrument Sans, indigo et teal du logo, mur d'affiches animé en ouverture, services en liste typographique, réalisations en mosaïque |
+| **Nouveau design** | Typographie Bricolage Grotesque + Instrument Sans, indigo et teal du logo, mur d'affiches animé en ouverture, réalisations en mosaïque |
+| **Services qui donnent envie de cliquer** | Cartes rectangulaires aux angles discrets, prix en grand, livrables, délai, badge « Le plus demandé » calculé sur les vraies commandes, boutons « Commander » et « Détails » ; bannière d'appel au devis |
 | **Base PostgreSQL** | Drizzle ORM, migrations versionnées. Sans configuration : PostgreSQL embarqué (PGlite) en mode démo |
 | **Connexion Google** | Pour les clients (Auth.js v5). Le compte est créé à la première connexion |
 | **Comptes équipe** | E-mail + mot de passe (scrypt), **double authentification** TOTP, blocage après 5 échecs |
@@ -19,6 +20,7 @@ Site, portfolio, espace client et dashboard de **DAS Communication** : marketing
 | **Sécurité** | Journal d'audit, en-têtes HTTP de sécurité, jetons d'invitation hachés, redirections contrôlées |
 
 <table>
+<tr><td><img src="docs/captures/services.webp" alt="Cartes de services"></td><td><img src="docs/captures/banniere.webp" alt="Bannière devis"></td></tr>
 <tr><td><img src="docs/captures/dashboard.webp" alt="Dashboard"></td><td><img src="docs/captures/connexion.webp" alt="Connexion"></td></tr>
 <tr><td><img src="docs/captures/roles.webp" alt="Matrice des rôles"></td><td><img src="docs/captures/espace-client.webp" alt="Espace client"></td></tr>
 </table>

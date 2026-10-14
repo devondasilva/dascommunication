@@ -21,7 +21,7 @@ export function MurAffiches({ className }: { className?: string }) {
         <div key={i} className={cx("flex flex-col gap-3 sm:gap-4", vitesses[i], i === 1 && "-mt-24")}>
           {/* Liste doublée : le défilement boucle sans saut */}
           {[...col, ...col].map((img, k) => (
-            <div key={`${img.src}-${k}`} className="overflow-hidden rounded-2xl bg-fond shadow-[0_1px_0_rgb(28_32_102/0.06)]">
+            <div key={`${img.src}-${k}`} className="overflow-hidden rounded-md bg-fond shadow-[0_1px_0_rgb(28_32_102/0.06)]">
               <Image
                 src={img.src}
                 alt=""

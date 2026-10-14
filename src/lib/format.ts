@@ -47,3 +47,15 @@ export function formaterRelatif(d: Date) {
 
 export const pluriel = (n: number, singulier: string, plurielMot = `${singulier}s`) =>
   `${formaterNombre(n)} ${n > 1 ? plurielMot : singulier}`;
+
+/** Sépare le nombre et la devise pour les mettre en forme différemment (ex. « 250 000 » + « F CFA »). */
+export function partiesMontant(v: number) {
+  const parties = fmtMontant.formatToParts(v);
+  const devise = parties.find((p) => p.type === "currency")?.value ?? "";
+  const nombre = parties
+    .filter((p) => p.type !== "currency")
+    .map((p) => p.value)
+    .join("")
+    .trim();
+  return { nombre, devise };
+}

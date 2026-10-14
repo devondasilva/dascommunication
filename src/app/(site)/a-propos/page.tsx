@@ -78,7 +78,7 @@ export default function PageAPropos() {
           <h2 className="text-3xl font-semibold tracking-tight text-encre">Nos principes non négociables</h2>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {VALEURS.map(({ icone: Icone, titre, accroche, texte }) => (
-              <article key={titre} className="rounded-2xl bg-white p-7 ring-1 ring-bordure">
+              <article key={titre} className="rounded-md bg-white p-7 ring-1 ring-bordure">
                 <span className="grid size-11 place-items-center rounded-xl bg-encre text-marque">
                   <Icone aria-hidden className="size-5" />
                 </span>
@@ -104,7 +104,7 @@ export default function PageAPropos() {
         <div className="mt-12 grid gap-10 md:grid-cols-2">
           {EQUIPE.map((m) => (
             <article key={m.nom}>
-              <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-fond ring-1 ring-bordure">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-fond ring-1 ring-bordure">
                 {m.photo ? (
                   <Image
                     src={m.photo}
@@ -131,7 +131,7 @@ export default function PageAPropos() {
       </section>
 
       <section className="px-4 pb-20 sm:px-6">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 rounded-3xl bg-encre px-8 py-12 md:flex-row md:items-center md:px-12">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 rounded-lg bg-encre px-8 py-12 md:flex-row md:items-center md:px-12">
           <h2 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">Travaillons ensemble.</h2>
           <div className="flex flex-wrap gap-3">
             <LienBouton href="/realisations" variante="secondaire" taille="lg">

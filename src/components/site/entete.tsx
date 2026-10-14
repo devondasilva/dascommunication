@@ -24,7 +24,7 @@ export function Entete() {
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-lg">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-lg">
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-6 px-4 sm:px-8">
         <Logo />
 
@@ -38,7 +38,7 @@ export function Entete() {
                     href={l.href}
                     aria-current={actif ? "page" : undefined}
                     className={cx(
-                      "rounded-full px-4 py-2 text-[15px] transition-colors",
+                      "rounded-md px-4 py-2 text-[15px] transition-colors",
                       actif ? "bg-fond font-medium text-encre" : "text-encre-douce hover:text-encre",
                     )}
                   >
@@ -51,12 +51,12 @@ export function Entete() {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <Link href="/espace" className="rounded-full px-4 py-2 text-[15px] text-encre-douce hover:text-encre">
+          <Link href="/espace" className="rounded-md px-4 py-2 text-[15px] text-encre-douce hover:text-encre">
             Mon espace
           </Link>
           <Link
             href="/commander"
-            className="rounded-full bg-marque px-5 py-2.5 text-[15px] font-medium text-nuit transition hover:bg-encre hover:text-white"
+            className="rounded-md bg-marque px-5 py-2.5 text-[15px] font-medium text-nuit transition hover:bg-encre hover:text-white"
           >
             Demander un devis
           </Link>
@@ -87,7 +87,7 @@ export function Entete() {
             <li className="pt-4">
               <Link
                 href="/commander"
-                className="flex h-12 items-center justify-center rounded-full bg-marque font-medium text-nuit"
+                className="flex h-12 items-center justify-center rounded-md bg-marque font-medium text-nuit"
               >
                 Demander un devis
               </Link>
