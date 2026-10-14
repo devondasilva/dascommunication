@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  CATEGORIES_REALISATION,
   CATEGORIES_SERVICE,
   PRIORITES,
   STATUTS_COMMANDE,
@@ -188,3 +189,58 @@ export const schemaChangementMotDePasse = z
     path: ["confirmation"],
     message: "Les deux mots de passe ne correspondent pas",
   });
+
+/* ------------------------------------------------------------------ */
+/*  Portfolio et paramètres                                             */
+/* ------------------------------------------------------------------ */
+
+export const schemaRealisation = z.object({
+  id: z.coerce.number().int().positive().optional(),
+  titre: z.string().trim().min(2, "Titre trop court").max(140),
+  slug: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Lettres minuscules, chiffres et tirets uniquement")
+    .max(80),
+  categorie: z.enum(CATEGORIES_REALISATION, { message: "Choisissez une catégorie" }),
+  client: optionnel(120),
+  secteur: optionnel(120),
+  description: optionnel(2000),
+  lien: z
+    .string()
+    .trim()
+    .transform((v) => (v === "" ? undefined : v))
+    .pipe(z.url("Lien invalide (doit commencer par https://)").optional())
+    .optional(),
+  tags: z
+    .string()
+    .optional()
+    .transform((v) =>
+      (v ?? "")
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .slice(0, 10),
+    ),
+  ordre: z.coerce.number().int().min(0).default(0),
+  misEnAvant: z
+    .string()
+    .optional()
+    .transform((v) => v === "on"),
+  publie: z
+    .string()
+    .optional()
+    .transform((v) => v === "on"),
+});
+
+/** Prix et délai d'un service, saisis dans l'écran « Tarifs ». */
+export const schemaTarif = z.object({
+  prix: z
+    .string()
+    .trim()
+    .transform((v) => v.replace(/[\s  ]/g, ""))
+    .refine((v) => /^\d+$/.test(v), "Prix invalide")
+    .transform(Number),
+  delai: z.coerce.number({ message: "Délai invalide" }).int().min(1, "1 jour minimum").max(365),
+});

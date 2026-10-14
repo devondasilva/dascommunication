@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Mail, MapPin, SearchCheck } from "lucide-react";
+import { ArrowRight, Mail, MapPin, MessageCircle, Phone, SearchCheck } from "lucide-react";
 import { Reseaux } from "@/components/site/reseaux";
-import { SITE } from "@/lib/constantes";
+import { parametresSite } from "@/lib/parametres";
 
 export const metadata: Metadata = {
   title: "Contact",
   description: "Écrivez-nous, commandez un service ou suivez votre projet. Présents au Maryland, en Virginie et au Bénin.",
 };
 
-export default function PageContact() {
+export default async function PageContact() {
+  const p = await parametresSite();
+  const whatsapp = p.whatsapp.replace(/\D/g, "");
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
       <p className="text-sm font-medium text-marque-texte">Contact</p>
@@ -39,34 +41,51 @@ export default function PageContact() {
         </Link>
 
         <a
-          href={`mailto:${SITE.email}`}
+          href={`mailto:${p.email}`}
           className="group flex items-start gap-4 rounded-md bg-white p-7 ring-1 ring-bordure transition hover:ring-encre/25"
         >
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-fond text-marque-texte">
+          <span className="grid size-11 shrink-0 place-items-center rounded-md bg-fond text-marque-texte">
             <Mail aria-hidden className="size-5" />
           </span>
           <div className="min-w-0">
             <h2 className="text-sm text-encre-muette">E-mail direct</h2>
-            <p className="mt-1 font-semibold break-all text-encre group-hover:underline">{SITE.email}</p>
+            <p className="mt-1 font-semibold break-all text-encre group-hover:underline">{p.email}</p>
           </div>
         </a>
 
         <div className="flex items-start gap-4 rounded-md bg-white p-7 ring-1 ring-bordure">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-fond text-marque-texte">
+          <span className="grid size-11 shrink-0 place-items-center rounded-md bg-fond text-marque-texte">
             <MapPin aria-hidden className="size-5" />
           </span>
           <div>
             <h2 className="text-sm text-encre-muette">Présence</h2>
-            <p className="mt-1 font-semibold text-encre">Maryland, Virginie et Bénin</p>
+            <p className="mt-1 font-semibold text-encre">{p.presence}</p>
             <p className="text-sm text-encre-muette">et à distance</p>
           </div>
         </div>
+
+        {(whatsapp || p.telephone) && (
+          <a
+            href={whatsapp ? `https://wa.me/${whatsapp}` : `tel:${p.telephone.replace(/\s/g, "")}`}
+            target={whatsapp ? "_blank" : undefined}
+            rel={whatsapp ? "noopener noreferrer" : undefined}
+            className="group flex items-start gap-4 rounded-md bg-white p-7 ring-1 ring-bordure transition hover:ring-encre/25"
+          >
+            <span className="grid size-11 shrink-0 place-items-center rounded-md bg-fond text-marque-texte">
+              {whatsapp ? <MessageCircle aria-hidden className="size-5" /> : <Phone aria-hidden className="size-5" />}
+            </span>
+            <div>
+              <h2 className="text-sm text-encre-muette">{whatsapp ? "WhatsApp" : "Téléphone"}</h2>
+              <p className="mt-1 font-semibold text-encre group-hover:underline">{whatsapp ? p.whatsapp : p.telephone}</p>
+            </div>
+          </a>
+        )}
 
         <Link
           href="/suivi"
           className="group flex items-start gap-4 rounded-md bg-white p-7 ring-1 ring-bordure transition hover:ring-encre/25"
         >
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-fond text-marque-texte">
+          <span className="grid size-11 shrink-0 place-items-center rounded-md bg-fond text-marque-texte">
             <SearchCheck aria-hidden className="size-5" />
           </span>
           <div>
@@ -77,7 +96,7 @@ export default function PageContact() {
 
         <div className="flex flex-col justify-between gap-4 rounded-md bg-white p-7 ring-1 ring-bordure">
           <h2 className="text-sm text-encre-muette">Suivez-nous</h2>
-          <Reseaux />
+          <Reseaux liens={p} />
         </div>
       </div>
     </div>

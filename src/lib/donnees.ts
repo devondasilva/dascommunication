@@ -8,12 +8,15 @@ import {
   invitations,
   journalAudit,
   modifications,
+  realisations,
   roles,
   services,
   utilisateurs,
+  visuels,
   type StatutCommande,
   type StatutModification,
 } from "@/db/schema";
+import type { CategorieRealisation } from "@/lib/enums";
 
 /**
  * Toutes les lectures se font à la requête (données toujours à jour,
@@ -320,4 +323,80 @@ export async function idsServicesPopulaires(limite = 2) {
     .orderBy(desc(count()))
     .limit(limite);
   return new Set(lignes.filter((l) => l.n >= 2).map((l) => l.serviceId!));
+}
+
+/* ================================================================== */
+/*  Portfolio (réalisations et visuels)                                 */
+/* ================================================================== */
+
+
+/** Réalisations publiées, avec leur visuel de couverture (le premier). */
+export async function realisationsPubliees(filtres: { categorie?: CategorieRealisation; misEnAvant?: boolean } = {}) {
+  await connection();
+  const lignes = await db.query.realisations.findMany({
+    where: and(
+      eq(realisations.publie, true),
+      filtres.categorie ? eq(realisations.categorie, filtres.categorie) : undefined,
+      filtres.misEnAvant ? eq(realisations.misEnAvant, true) : undefined,
+    ),
+    orderBy: [asc(realisations.ordre), desc(realisations.creeLe)],
+    with: { visuels: { orderBy: [asc(visuels.ordre), asc(visuels.id)], limit: 1 } },
+  });
+  return lignes
+    .filter((r) => r.visuels.length > 0)
+    .map(({ visuels: v, ...r }) => ({ ...r, couverture: v[0] }));
+}
+
+export async function compteRealisationsParCategorie() {
+  await connection();
+  const lignes = await db
+    .select({ categorie: realisations.categorie, n: count() })
+    .from(realisations)
+    .where(eq(realisations.publie, true))
+    .groupBy(realisations.categorie);
+  return Object.fromEntries(lignes.map((l) => [l.categorie, l.n])) as Partial<Record<CategorieRealisation, number>>;
+}
+
+export async function realisationPublieeParSlug(slug: string) {
+  await connection();
+  return db.query.realisations.findFirst({
+    where: and(eq(realisations.slug, slug), eq(realisations.publie, true)),
+    with: { visuels: { orderBy: [asc(visuels.ordre), asc(visuels.id)] } },
+  });
+}
+
+/** Affiches (format portrait) pour le mur animé de l'accueil et la bannière. */
+export async function affichesPourMur(limite = 18, { misEnAvant = false }: { misEnAvant?: boolean } = {}) {
+  await connection();
+  const lignes = await db
+    .select({ url: visuels.url, largeur: visuels.largeur, hauteur: visuels.hauteur, alt: visuels.alt })
+    .from(visuels)
+    .innerJoin(realisations, eq(visuels.realisationId, realisations.id))
+    .where(
+      and(
+        eq(realisations.publie, true),
+        eq(realisations.categorie, "visuels"),
+        misEnAvant ? eq(realisations.misEnAvant, true) : undefined,
+        sql`${visuels.hauteur} >= ${visuels.largeur} * 0.95`,
+      ),
+    )
+    .orderBy(asc(realisations.ordre), asc(visuels.ordre))
+    .limit(limite);
+  return lignes;
+}
+
+/** Dashboard : toutes les réalisations (publiées ou non), avec couverture et nombre de visuels. */
+export async function toutesLesRealisations(categorie?: CategorieRealisation) {
+  await connection();
+  const lignes = await db.query.realisations.findMany({
+    where: categorie ? eq(realisations.categorie, categorie) : undefined,
+    orderBy: [asc(realisations.ordre), desc(realisations.creeLe)],
+    with: { visuels: { orderBy: [asc(visuels.ordre), asc(visuels.id)] } },
+  });
+  return lignes.map(({ visuels: v, ...r }) => ({ ...r, couverture: v[0] ?? null, nbVisuels: v.length }));
+}
+
+export async function realisationParId(id: number) {
+  await connection();
+  return db.query.realisations.findFirst({ where: eq(realisations.id, id), with: { visuels: { orderBy: [asc(visuels.ordre), asc(visuels.id)] } } });
 }

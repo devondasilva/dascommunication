@@ -17,6 +17,9 @@ Site, portfolio, espace client et dashboard de **DAS Communication** : marketing
 | **Recrutement** | Invitation d'un membre par lien sécurisé (7 jours), choix du rôle et des compétences, désactivation |
 | **Espace client** | Profil à compléter, liste des projets, devis pré-rempli, suivi de commande |
 | **Dashboard** | Menu adapté au rôle, montants masqués sans accès finances, pages Équipe, Rôles, Clients, Journal d'audit, Mon compte |
+| **Réalisations (portfolio)** | Ajout de projets par catégorie (logos, web, visuels, édition) depuis le dashboard : glisser-déposer de plusieurs visuels, redimensionnement automatique en WebP, couverture, ordre, textes alternatifs, publication et mise en avant sur l'accueil |
+| **Tarifs** | Prix de départ et délais de tous les services sur un seul écran, enregistrement groupé, historique dans le journal |
+| **Paramètres du site** | E-mail, téléphone, WhatsApp, réseaux sociaux, textes de la bannière devis : modifiables sans toucher au code |
 | **Sécurité** | Journal d'audit, en-têtes HTTP de sécurité, jetons d'invitation hachés, redirections contrôlées |
 
 <table>
@@ -48,10 +51,18 @@ Ouvrez http://localhost:3000. Sans `DATABASE_URL`, le **mode démo** s'active : 
    - `ADMIN_EMAIL` et `ADMIN_PASSWORD` : votre compte super-administrateur
    - `AUTH_GOOGLE_ID` et `AUTH_GOOGLE_SECRET` : identifiants OAuth Google
    - `NEXT_PUBLIC_SITE_URL` : l'adresse publique du site
+   - `BLOB_READ_WRITE_TOKEN` : ajouté automatiquement en créant un store **Blob** (Storage → Blob). Indispensable pour que les visuels envoyés depuis le dashboard soient conservés
 3. **Google** : dans Google Cloud Console, créez un *ID client OAuth* (application Web) avec l'URI de redirection `https://VOTRE-DOMAINE/api/auth/callback/google`.
 4. Déployez. Le script `vercel-build` applique les migrations et crée le super-administrateur avant le build.
 
 > Sans `DATABASE_URL`, un déploiement Vercel fonctionne aussi, en **mode démo** : pratique pour prévisualiser, mais les données sont temporaires et propres à chaque instance.
+
+## Stockage des visuels
+
+Les images envoyées depuis **Dashboard → Réalisations** sont compressées dans le navigateur, puis redimensionnées (1600 px, WebP) côté serveur.
+
+- Avec `BLOB_READ_WRITE_TOKEN` : stockage **Vercel Blob**, permanent.
+- Sans : dossier local `.fichiers/` (parfait en développement). Sur Vercel, ce dossier est temporaire : le dashboard affiche une alerte tant que Blob n'est pas configuré.
 
 ## Scripts
 
@@ -75,15 +86,15 @@ src/
 │   ├── connexion/            Connexion client / équipe
 │   ├── invitation/[jeton]/   Activation d'un compte équipe
 │   ├── espace/               Espace client
-│   └── dashboard/            Back-office (équipe, rôles, clients, journal…)
-├── db/                       Schéma, migrations embarquées, données initiales
-├── data/realisations.ts      Portfolio
-└── lib/                      Permissions, sessions, 2FA, audit, validations
+│   ├── fichiers/[nom]/       Visuels stockés localement
+│   └── dashboard/            Back-office (réalisations, tarifs, paramètres, équipe, rôles…)
+├── db/                       Schéma, migrations embarquées, données initiales (dont le portfolio d'origine)
+└── lib/                      Permissions, sessions, 2FA, audit, stockage, paramètres
 ```
 
 ## Phases suivantes
 
-2. Réalisations en **packages par type d'événement** avec déclinaisons, blog
+2. **Packages par type d'événement** (mariage, lancement, séminaire…) regroupant des réalisations, blog
 3. **Devis** PDF signés en ligne, livrables, révisions
 4. **Paiements** Mobile Money (FedaPay / KkiaPay) et carte (Stripe), factures
 5. **Eury** (assistante IA), chat en direct, notifications e-mail / WhatsApp

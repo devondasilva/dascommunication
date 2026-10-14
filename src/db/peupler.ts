@@ -7,6 +7,7 @@ import { randomBytes } from "node:crypto";
 import { eq, sql } from "drizzle-orm";
 import { hacherMotDePasse } from "@/lib/mot-de-passe";
 import { ROLES_PAR_DEFAUT } from "@/lib/permissions";
+import { REALISATIONS_INITIALES } from "./realisations-initiales";
 import * as schema from "./schema";
 import type { BaseDeDonnees } from "./types";
 
@@ -230,9 +231,43 @@ export async function peupler(db: BaseDeDonnees, { demo }: { demo: boolean }) {
     await db.insert(schema.services).values(s).onConflictDoNothing({ target: schema.services.slug });
   }
 
+  // 4. Portfolio : import initial (une seule fois, quand la table est vide)
+  const [{ nbReal }] = await db.select({ nbReal: sql<number>`count(*)::int` }).from(schema.realisations);
+  if (nbReal === 0) {
+    let ordre = 0;
+    for (const r of REALISATIONS_INITIALES) {
+      const [cree] = await db
+        .insert(schema.realisations)
+        .values({
+          slug: r.slug,
+          titre: r.titre,
+          categorie: r.categorie,
+          description: r.description ?? null,
+          client: r.client ?? null,
+          secteur: r.secteur ?? null,
+          lien: r.lien ?? null,
+          tags: r.tags,
+          misEnAvant: r.misEnAvant ?? false,
+          ordre: ordre++,
+        })
+        .returning({ id: schema.realisations.id });
+      const images = r.galerie?.length ? r.galerie : [r.image];
+      await db.insert(schema.visuels).values(
+        images.map((img, i) => ({
+          realisationId: cree.id,
+          url: img.src,
+          largeur: img.largeur,
+          hauteur: img.hauteur,
+          alt: img.alt,
+          ordre: i,
+        })),
+      );
+    }
+  }
+
   if (!demo) return;
 
-  // 4. Démo : un membre « designer » pour tester les permissions
+  // 5. Démo : un membre « designer » pour tester les permissions
   const designer = await db.query.utilisateurs.findFirst({
     where: eq(schema.utilisateurs.email, COMPTES_DEMO.designer.email),
     columns: { id: true },
@@ -249,7 +284,7 @@ export async function peupler(db: BaseDeDonnees, { demo }: { demo: boolean }) {
     });
   }
 
-  // 5. Démo : commandes fictives
+  // 6. Démo : commandes fictives
   const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(schema.commandes);
   if (n > 0) return;
 

@@ -13,6 +13,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import {
+  CATEGORIES_REALISATION,
   CATEGORIES_SERVICE,
   PRIORITES,
   STATUTS_COMMANDE,
@@ -197,6 +198,64 @@ export const activites = pgTable(
 );
 
 /* ================================================================== */
+/*  Portfolio : réalisations et leurs visuels                           */
+/* ================================================================== */
+
+export const realisations = pgTable(
+  "realisations",
+  {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    titre: text("titre").notNull(),
+    categorie: text("categorie", { enum: CATEGORIES_REALISATION }).notNull(),
+    description: text("description"),
+    client: text("client"),
+    secteur: text("secteur"),
+    /** Lien externe (maquette Figma, site en ligne…) */
+    lien: text("lien"),
+    tags: text("tags").array().notNull().default(sql`'{}'::text[]`),
+    /** Affichée sur l'accueil */
+    misEnAvant: boolean("mis_en_avant").notNull().default(false),
+    /** Visible sur le site public */
+    publie: boolean("publie").notNull().default(true),
+    ordre: integer("ordre").notNull().default(0),
+    creeLe: horodatage("cree_le"),
+    majLe: horodatage("maj_le"),
+  },
+  (t) => [index("realisations_categorie_idx").on(t.categorie), index("realisations_ordre_idx").on(t.ordre)],
+);
+
+/** Visuels d'une réalisation ; le premier (ordre le plus petit) sert de couverture. */
+export const visuels = pgTable(
+  "visuels",
+  {
+    id: serial("id").primaryKey(),
+    realisationId: integer("realisation_id")
+      .notNull()
+      .references(() => realisations.id, { onDelete: "cascade" }),
+    url: text("url").notNull(),
+    largeur: integer("largeur").notNull(),
+    hauteur: integer("hauteur").notNull(),
+    alt: text("alt").notNull().default(""),
+    ordre: integer("ordre").notNull().default(0),
+    /** Vrai pour les fichiers envoyés depuis le dashboard (supprimables du stockage) */
+    televerse: boolean("televerse").notNull().default(false),
+    creeLe: horodatage("cree_le"),
+  },
+  (t) => [index("visuels_realisation_idx").on(t.realisationId, t.ordre)],
+);
+
+/* ================================================================== */
+/*  Paramètres du site (coordonnées, bannière…) modifiables             */
+/* ================================================================== */
+
+export const parametres = pgTable("parametres", {
+  cle: text("cle").primaryKey(),
+  valeur: text("valeur").notNull(),
+  majLe: horodatage("maj_le"),
+});
+
+/* ================================================================== */
 /*  Relations                                                           */
 /* ================================================================== */
 
@@ -233,6 +292,16 @@ export const activitesRelations = relations(activites, ({ one }) => ({
   commande: one(commandes, { fields: [activites.commandeId], references: [commandes.id] }),
 }));
 
+export const realisationsRelations = relations(realisations, ({ many }) => ({
+  visuels: many(visuels),
+}));
+
+export const visuelsRelations = relations(visuels, ({ one }) => ({
+  realisation: one(realisations, { fields: [visuels.realisationId], references: [realisations.id] }),
+}));
+
+export type Realisation = typeof realisations.$inferSelect;
+export type Visuel = typeof visuels.$inferSelect;
 export type Role = typeof roles.$inferSelect;
 export type Utilisateur = typeof utilisateurs.$inferSelect;
 export type Invitation = typeof invitations.$inferSelect;

@@ -14,7 +14,8 @@ export const PERMISSIONS = {
 
   "finances.voir": { groupe: "Finances", libelle: "Voir les montants et le chiffre d'affaires" },
 
-  "services.gerer": { groupe: "Catalogue", libelle: "Créer et modifier les services" },
+  "services.gerer": { groupe: "Catalogue", libelle: "Créer et modifier les services et les tarifs" },
+  "realisations.gerer": { groupe: "Catalogue", libelle: "Ajouter et modifier les réalisations (visuels)" },
 
   "clients.voir": { groupe: "Clients", libelle: "Voir la liste des clients" },
 
@@ -23,6 +24,7 @@ export const PERMISSIONS = {
   "roles.gerer": { groupe: "Équipe", libelle: "Créer et modifier les rôles" },
 
   "audit.voir": { groupe: "Sécurité", libelle: "Consulter le journal d'audit" },
+  "parametres.gerer": { groupe: "Sécurité", libelle: "Modifier les paramètres du site (coordonnées, bannière)" },
 } as const;
 
 export type Permission = keyof typeof PERMISSIONS;
@@ -60,7 +62,7 @@ export const ROLES_PAR_DEFAUT: { slug: string; nom: string; description: string;
     slug: "chef-de-projet",
     nom: "Chef de projet",
     description: "Pilote les commandes de bout en bout et coordonne l'équipe.",
-    permissions: ["dashboard.voir", "commandes.voir", "commandes.gerer", "modifications.gerer", "finances.voir", "clients.voir", "equipe.voir"],
+    permissions: ["dashboard.voir", "commandes.voir", "commandes.gerer", "modifications.gerer", "finances.voir", "clients.voir", "equipe.voir", "realisations.gerer"],
   },
   {
     slug: "commercial",
@@ -77,14 +79,14 @@ export const ROLES_PAR_DEFAUT: { slug: string; nom: string; description: string;
   {
     slug: "designer",
     nom: "Designer graphique",
-    description: "Traite les commandes de création et les demandes de modification.",
-    permissions: ["commandes.voir", "modifications.gerer"],
+    description: "Traite les commandes de création, les modifications et publie ses réalisations.",
+    permissions: ["commandes.voir", "modifications.gerer", "realisations.gerer"],
   },
   {
     slug: "community-manager",
     nom: "Community manager",
-    description: "Traite les commandes réseaux sociaux et répond aux clients.",
-    permissions: ["commandes.voir", "modifications.gerer"],
+    description: "Traite les commandes réseaux sociaux, répond aux clients et publie des réalisations.",
+    permissions: ["commandes.voir", "modifications.gerer", "realisations.gerer"],
   },
   {
     slug: "developpeur",

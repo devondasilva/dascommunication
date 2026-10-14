@@ -22,9 +22,11 @@ const MENU: { titre?: string; liens: (LienNav & { permission: Permission })[] }[
     ],
   },
   {
-    titre: "Catalogue et clients",
+    titre: "Catalogue et portfolio",
     liens: [
       { href: "/dashboard/services", libelle: "Services", icone: "services", permission: "services.gerer" },
+      { href: "/dashboard/tarifs", libelle: "Tarifs", icone: "tarifs", permission: "services.gerer" },
+      { href: "/dashboard/realisations", libelle: "Réalisations", icone: "realisations", permission: "realisations.gerer" },
       { href: "/dashboard/clients", libelle: "Clients", icone: "clients", permission: "clients.voir" },
     ],
   },
@@ -34,6 +36,7 @@ const MENU: { titre?: string; liens: (LienNav & { permission: Permission })[] }[
       { href: "/dashboard/equipe", libelle: "Équipe", icone: "equipe", permission: "equipe.voir" },
       { href: "/dashboard/roles", libelle: "Rôles et accès", icone: "roles", permission: "roles.gerer" },
       { href: "/dashboard/journal", libelle: "Journal d'audit", icone: "journal", permission: "audit.voir" },
+      { href: "/dashboard/parametres", libelle: "Paramètres du site", icone: "parametres", permission: "parametres.gerer" },
     ],
   },
 ];

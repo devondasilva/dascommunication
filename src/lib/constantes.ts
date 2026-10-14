@@ -1,4 +1,5 @@
 import type {
+  CategorieRealisation,
   CategorieService,
   Priorite,
   StatutCommande,
@@ -18,6 +19,13 @@ export const SITE = {
     instagram: "https://www.instagram.com/devondasilva5",
     facebook: "https://www.facebook.com/devon.dasilva.37",
   },
+};
+
+export const LIBELLES_REALISATION: Record<CategorieRealisation, string> = {
+  logos: "Logos",
+  web: "Web & applications",
+  visuels: "Visuels & supports",
+  edition: "Édition",
 };
 
 export const LIBELLES_CATEGORIE: Record<CategorieService, string> = {

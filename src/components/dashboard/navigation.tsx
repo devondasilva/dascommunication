@@ -4,12 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
+  BadgeEuro,
   ExternalLink,
+  Images,
   LayoutDashboard,
   Menu,
   MessageSquareDiff,
   Package,
   ScrollText,
+  Settings,
   ShieldCheck,
   ShoppingBag,
   UserCircle,
@@ -37,6 +40,9 @@ const ICONES: Record<string, LucideIcon> = {
   commandes: ShoppingBag,
   modifications: MessageSquareDiff,
   services: Package,
+  tarifs: BadgeEuro,
+  realisations: Images,
+  parametres: Settings,
   clients: UsersRound,
   equipe: Users,
   roles: ShieldCheck,

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SITE } from "@/lib/constantes";
+import { parametresSite } from "@/lib/parametres";
 import { Logo } from "./logo";
 import { Reseaux } from "./reseaux";
 
@@ -32,7 +33,8 @@ const COLONNES = [
   },
 ];
 
-export function PiedDePage() {
+export async function PiedDePage() {
+  const p = await parametresSite();
   return (
     <footer className="bg-nuit text-white/65">
       <div className="mx-auto max-w-7xl px-4 pt-20 pb-10 sm:px-8">
@@ -40,13 +42,18 @@ export function PiedDePage() {
           <div>
             <Logo clair />
             <p className="mt-6 max-w-xs leading-relaxed">
-              Agence de communication, de design et de développement. Au Maryland, en Virginie et au Bénin.
+              Agence de communication, de design et de développement.{p.presence ? ` ${p.presence}.` : ""}
             </p>
-            <a href={`mailto:${SITE.email}`} className="mt-6 inline-block text-white underline-offset-4 hover:underline">
-              {SITE.email}
+            <a href={`mailto:${p.email}`} className="mt-6 inline-block text-white underline-offset-4 hover:underline">
+              {p.email}
             </a>
+            {p.telephone && (
+              <a href={`tel:${p.telephone.replace(/\s/g, "")}`} className="mt-1 block text-white/80 hover:text-white">
+                {p.telephone}
+              </a>
+            )}
             <div className="mt-6">
-              <Reseaux clair />
+              <Reseaux clair liens={p} />
             </div>
           </div>
           {COLONNES.map((col) => (
