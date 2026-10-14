@@ -4,15 +4,16 @@ import { useActionState, useState } from "react";
 import { enregistrerTarifs } from "@/actions/parametres";
 import { Alerte, Carte, cx } from "@/components/ui";
 import { BoutonEnvoi } from "@/components/ui/bouton-envoi";
+import { convertirEnUsd } from "@/lib/prix";
 import type { EtatFormulaire } from "@/lib/validations";
 
-type Ligne = { id: number; nom: string; prix: number; delai: number; actif: boolean };
+type Ligne = { id: number; nom: string; prix: number; usd: number | null; delai: number; actif: boolean };
 
 const fmt = new Intl.NumberFormat("fr-FR");
 const champ =
   "h-10 w-full rounded-md bg-white px-3 text-right tabular-nums ring-1 ring-inset ring-bordure focus:ring-2 focus:ring-marque-fonce focus:outline-none aria-[invalid=true]:ring-red-400";
 
-export function TableauTarifs({ groupes }: { groupes: { titre: string; lignes: Ligne[] }[] }) {
+export function TableauTarifs({ groupes, taux }: { groupes: { titre: string; lignes: Ligne[] }[]; taux: number }) {
   const [etat, action] = useActionState<EtatFormulaire, FormData>(enregistrerTarifs, {});
   const [modifies, setModifies] = useState<Set<string>>(new Set());
   const marquer = (cle: string, change: boolean) =>
@@ -40,17 +41,20 @@ export function TableauTarifs({ groupes }: { groupes: { titre: string; lignes: L
                 <thead className="text-xs text-encre-muette">
                   <tr>
                     <th scope="col" className="px-5 pt-3 pb-1 text-left font-medium">Service</th>
-                    <th scope="col" className="w-48 px-3 pt-3 pb-1 text-right font-medium">Prix de départ</th>
+                    <th scope="col" className="w-44 px-3 pt-3 pb-1 text-right font-medium">Prix (F CFA)</th>
+                    <th scope="col" className="w-36 px-3 pt-3 pb-1 text-right font-medium">Prix ($ US)</th>
                     <th scope="col" className="w-32 px-5 pt-3 pb-1 text-right font-medium">Délai (jours)</th>
                   </tr>
                 </thead>
                 <tbody>
                   {g.lignes.map((l) => {
                     const cleP = `prix-${l.id}`;
+                    const cleU = `usd-${l.id}`;
                     const cleD = `delai-${l.id}`;
                     const errP = etat.erreurs?.[cleP]?.[0];
+                    const errU = etat.erreurs?.[cleU]?.[0];
                     const errD = etat.erreurs?.[cleD]?.[0];
-                    const change = modifies.has(cleP) || modifies.has(cleD);
+                    const change = modifies.has(cleP) || modifies.has(cleU) || modifies.has(cleD);
                     return (
                       <tr key={l.id} className={cx("border-t border-bordure/70", change && "bg-marque-pale/50")}>
                         <td className="px-5 py-2.5">
@@ -72,6 +76,22 @@ export function TableauTarifs({ groupes }: { groupes: { titre: string; lignes: L
                             className={champ}
                           />
                           {errP && <p className="mt-1 text-right text-xs text-red-700">{errP}</p>}
+                        </td>
+                        <td className="px-3 py-2.5">
+                          <label htmlFor={cleU} className="sr-only">
+                            Prix en dollars de {l.nom} (vide : conversion automatique)
+                          </label>
+                          <input
+                            id={cleU}
+                            name={cleU}
+                            inputMode="numeric"
+                            placeholder={`${fmt.format(convertirEnUsd(l.prix, taux))} auto`}
+                            defaultValue={etat.valeurs?.[cleU] ?? (l.usd != null ? fmt.format(l.usd) : "")}
+                            aria-invalid={errU ? true : undefined}
+                            onChange={(e) => marquer(cleU, e.target.value.replace(/\D/g, "") !== String(l.usd ?? ""))}
+                            className={cx(champ, "placeholder:text-encre-muette/60")}
+                          />
+                          {errU && <p className="mt-1 text-right text-xs text-red-700">{errU}</p>}
                         </td>
                         <td className="px-5 py-2.5">
                           <label htmlFor={cleD} className="sr-only">

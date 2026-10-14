@@ -15,6 +15,8 @@ import {
 import {
   CATEGORIES_REALISATION,
   CATEGORIES_SERVICE,
+  DEVISES,
+  LANGUES,
   PRIORITES,
   STATUTS_COMMANDE,
   STATUTS_MODIFICATION,
@@ -121,8 +123,15 @@ export const services = pgTable("services", {
   description: text("description").notNull(),
   /** Liste des livrables, une ligne par élément */
   livrables: text("livrables").notNull().default(""),
-  /** Prix « à partir de », en unité de la devise (ex. F CFA) */
+  /** Prix « à partir de », en F CFA */
   prixDepart: integer("prix_depart").notNull(),
+  /** Prix « à partir de » en dollars ; vide = conversion automatique au taux des paramètres */
+  prixUsd: integer("prix_usd"),
+  // Version anglaise (vide = texte français affiché)
+  nomEn: text("nom_en"),
+  resumeEn: text("resume_en"),
+  descriptionEn: text("description_en"),
+  livrablesEn: text("livrables_en"),
   delaiJours: integer("delai_jours").notNull(),
   actif: boolean("actif").notNull().default(true),
   ordre: integer("ordre").notNull().default(0),
@@ -150,8 +159,12 @@ export const commandes = pgTable(
     budget: text("budget"),
     dateSouhaitee: text("date_souhaitee"),
     statut: text("statut", { enum: STATUTS_COMMANDE }).notNull().default("nouvelle"),
-    /** Montant facturé, fixé par l'équipe */
+    /** Montant facturé, fixé par l'équipe, dans la devise de la commande */
     montant: integer("montant"),
+    /** Devise choisie par le client (F CFA ou dollars) */
+    devise: text("devise", { enum: DEVISES }).notNull().default("XOF"),
+    /** Langue du client : l'équipe lui répond dans cette langue */
+    langue: text("langue", { enum: LANGUES }).notNull().default("fr"),
     notesInternes: text("notes_internes"),
     creeLe: horodatage("cree_le"),
     majLe: horodatage("maj_le"),
@@ -211,6 +224,10 @@ export const realisations = pgTable(
     description: text("description"),
     client: text("client"),
     secteur: text("secteur"),
+    // Version anglaise (vide = texte français affiché)
+    titreEn: text("titre_en"),
+    descriptionEn: text("description_en"),
+    secteurEn: text("secteur_en"),
     /** Lien externe (maquette Figma, site en ligne…) */
     lien: text("lien"),
     tags: text("tags").array().notNull().default(sql`'{}'::text[]`),

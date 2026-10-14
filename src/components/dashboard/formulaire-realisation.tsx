@@ -73,6 +73,30 @@ export function FormulaireRealisation({
         erreur={e.description}
       />
 
+      <fieldset className="space-y-4 rounded-lg border border-bordure bg-fond/50 p-5">
+        <legend className="px-1 text-sm font-semibold text-encre">Version anglaise du site</legend>
+        <p className="-mt-2 text-xs text-encre-muette">Affichée sur /en. Un champ vide affiche le texte français.</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Champ label="Title" name="titreEn" lang="en" defaultValue={v.titreEn ?? realisation?.titreEn ?? ""} erreur={e.titreEn} />
+          <Champ
+            label="Industry"
+            name="secteurEn"
+            lang="en"
+            placeholder="e.g. Sports events"
+            defaultValue={v.secteurEn ?? realisation?.secteurEn ?? ""}
+            erreur={e.secteurEn}
+          />
+        </div>
+        <ZoneTexte
+          label="Description"
+          name="descriptionEn"
+          lang="en"
+          rows={3}
+          defaultValue={v.descriptionEn ?? realisation?.descriptionEn ?? ""}
+          erreur={e.descriptionEn}
+        />
+      </fieldset>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <Champ
           label="Mots-clés"

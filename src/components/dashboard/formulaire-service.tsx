@@ -53,9 +53,9 @@ export function FormulaireService({ service }: { service?: Service }) {
             </option>
           ))}
         </Selection>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-[1fr_1fr_0.8fr] gap-4">
           <Champ
-            label="Prix de départ"
+            label="Prix (F CFA)"
             name="prixDepart"
             type="number"
             min={0}
@@ -63,6 +63,17 @@ export function FormulaireService({ service }: { service?: Service }) {
             requis
             defaultValue={v.prixDepart ?? service?.prixDepart}
             erreur={e.prixDepart}
+          />
+          <Champ
+            label="Prix (USD)"
+            name="prixUsd"
+            type="number"
+            min={0}
+            step={5}
+            placeholder="Auto"
+            defaultValue={v.prixUsd ?? service?.prixUsd ?? ""}
+            erreur={e.prixUsd}
+            aide="Vide = converti"
           />
           <Champ
             label="Délai (jours)"
@@ -103,6 +114,46 @@ export function FormulaireService({ service }: { service?: Service }) {
         erreur={e.livrables}
         aide="Un livrable par ligne."
       />
+
+      <fieldset className="space-y-5 rounded-lg border border-bordure bg-fond/50 p-5">
+        <legend className="px-1 text-sm font-semibold text-encre">Version anglaise du site</legend>
+        <p className="-mt-2 text-xs text-encre-muette">
+          Affichée sur /en. Un champ laissé vide affiche le texte français à la place.
+        </p>
+        <Champ
+          label="Name"
+          name="nomEn"
+          lang="en"
+          defaultValue={v.nomEn ?? service?.nomEn ?? ""}
+          erreur={e.nomEn}
+        />
+        <ZoneTexte
+          label="Summary"
+          name="resumeEn"
+          lang="en"
+          rows={2}
+          maxLength={200}
+          defaultValue={v.resumeEn ?? service?.resumeEn ?? ""}
+          erreur={e.resumeEn}
+        />
+        <ZoneTexte
+          label="Description"
+          name="descriptionEn"
+          lang="en"
+          rows={4}
+          defaultValue={v.descriptionEn ?? service?.descriptionEn ?? ""}
+          erreur={e.descriptionEn}
+        />
+        <ZoneTexte
+          label="Deliverables"
+          name="livrablesEn"
+          lang="en"
+          rows={4}
+          defaultValue={v.livrablesEn ?? service?.livrablesEn ?? ""}
+          erreur={e.livrablesEn}
+          aide="One deliverable per line, in the same order as in French."
+        />
+      </fieldset>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Champ

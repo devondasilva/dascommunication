@@ -37,3 +37,11 @@ export type TypeUtilisateur = (typeof TYPES_UTILISATEUR)[number];
 /** Catégories du portfolio (réalisations) */
 export const CATEGORIES_REALISATION = ["logos", "web", "visuels", "edition"] as const;
 export type CategorieRealisation = (typeof CATEGORIES_REALISATION)[number];
+
+/** Langues du site public : le français à la racine, l'anglais sous /en */
+export const LANGUES = ["fr", "en"] as const;
+export type Langue = (typeof LANGUES)[number];
+
+/** Devises d'affichage et de facturation */
+export const DEVISES = ["XOF", "USD"] as const;
+export type Devise = (typeof DEVISES)[number];

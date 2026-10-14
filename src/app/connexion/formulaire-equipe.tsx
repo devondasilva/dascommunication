@@ -4,8 +4,10 @@ import { useActionState, useState } from "react";
 import { connexionEquipe, type EtatConnexion } from "@/actions/auth";
 import { Alerte, Champ } from "@/components/ui";
 import { BoutonEnvoi } from "@/components/ui/bouton-envoi";
+import { useI18n } from "@/i18n/client";
 
 export function FormulaireEquipe({ redirection, emailInitial }: { redirection?: string; emailInitial?: string }) {
+  const { tr } = useI18n();
   const [etat, action] = useActionState<EtatConnexion, FormData>(connexionEquipe, {});
   const deuxiemeEtape = etat.etape === "2fa";
   // Champs contrôlés : conservés entre l'étape « mot de passe » et l'étape « code »
@@ -19,7 +21,7 @@ export function FormulaireEquipe({ redirection, emailInitial }: { redirection?: 
 
       <div className={deuxiemeEtape ? "hidden" : "space-y-4"}>
         <Champ
-          label="E-mail professionnel"
+          label={tr("E-mail professionnel", "Work email")}
           name="email"
           type="email"
           autoComplete="username"
@@ -29,7 +31,7 @@ export function FormulaireEquipe({ redirection, emailInitial }: { redirection?: 
           erreur={etat.erreurs?.email}
         />
         <Champ
-          label="Mot de passe"
+          label={tr("Mot de passe", "Password")}
           name="motDePasse"
           type="password"
           autoComplete="current-password"
@@ -43,11 +45,13 @@ export function FormulaireEquipe({ redirection, emailInitial }: { redirection?: 
       {deuxiemeEtape && (
         <>
           <Alerte ton="info">
-            Ouvrez votre application d&apos;authentification et saisissez le code à 6 chiffres affiché pour DAS
-            Communication.
+            {tr(
+              "Ouvrez votre application d'authentification et saisissez le code à 6 chiffres affiché pour DAS Communication.",
+              "Open your authenticator app and enter the 6-digit code shown for DAS Communication.",
+            )}
           </Alerte>
           <Champ
-            label="Code de vérification"
+            label={tr("Code de vérification", "Verification code")}
             name="code"
             inputMode="numeric"
             autoComplete="one-time-code"
@@ -60,8 +64,8 @@ export function FormulaireEquipe({ redirection, emailInitial }: { redirection?: 
         </>
       )}
 
-      <BoutonEnvoi className="w-full" taille="lg" enCours="Connexion…">
-        {deuxiemeEtape ? "Vérifier et me connecter" : "Me connecter"}
+      <BoutonEnvoi className="w-full" taille="lg" enCours={tr("Connexion…", "Signing in…")}>
+        {deuxiemeEtape ? tr("Vérifier et me connecter", "Verify and sign in") : tr("Me connecter", "Sign in")}
       </BoutonEnvoi>
     </form>
   );

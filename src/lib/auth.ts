@@ -1,4 +1,6 @@
 import "server-only";
+import { lienLocal } from "@/i18n/commun";
+import { langueRequete } from "@/i18n/serveur";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { cache } from "react";
@@ -65,7 +67,7 @@ export async function autoriser(permission: Permission) {
 /** Portail client (et équipe, qui peut aussi le consulter). */
 export async function exigerConnexion() {
   const c = await utilisateurConnecte();
-  if (!c) redirect("/connexion");
+  if (!c) redirect(lienLocal(await langueRequete(), "/connexion"));
   return c;
 }
 

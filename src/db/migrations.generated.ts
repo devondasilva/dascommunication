@@ -44,5 +44,20 @@ export const MIGRATIONS: { nom: string; requetes: string[] }[] = [
       "CREATE INDEX \"realisations_ordre_idx\" ON \"realisations\" USING btree (\"ordre\");",
       "CREATE INDEX \"visuels_realisation_idx\" ON \"visuels\" USING btree (\"realisation_id\",\"ordre\");"
     ]
+  },
+  {
+    "nom": "0002_bilingue_devises",
+    "requetes": [
+      "ALTER TABLE \"commandes\" ADD COLUMN \"devise\" text DEFAULT 'XOF' NOT NULL;",
+      "ALTER TABLE \"commandes\" ADD COLUMN \"langue\" text DEFAULT 'fr' NOT NULL;",
+      "ALTER TABLE \"realisations\" ADD COLUMN \"titre_en\" text;",
+      "ALTER TABLE \"realisations\" ADD COLUMN \"description_en\" text;",
+      "ALTER TABLE \"realisations\" ADD COLUMN \"secteur_en\" text;",
+      "ALTER TABLE \"services\" ADD COLUMN \"prix_usd\" integer;",
+      "ALTER TABLE \"services\" ADD COLUMN \"nom_en\" text;",
+      "ALTER TABLE \"services\" ADD COLUMN \"resume_en\" text;",
+      "ALTER TABLE \"services\" ADD COLUMN \"description_en\" text;",
+      "ALTER TABLE \"services\" ADD COLUMN \"livrables_en\" text;"
+    ]
   }
 ];

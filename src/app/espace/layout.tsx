@@ -1,20 +1,24 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { deconnexion } from "@/actions/auth";
 import { Logo } from "@/components/site/logo";
 import { LienBouton } from "@/components/ui";
+import { i18n } from "@/i18n/serveur";
 import { exigerConnexion } from "@/lib/auth";
 import { NavEspace } from "./nav-espace";
 
-export const metadata: Metadata = {
-  title: { default: "Mon espace", template: "%s · Mon espace DAS COM" },
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { tr } = await i18n();
+  return {
+    title: { default: tr("Mon espace", "My account"), template: tr("%s · Mon espace DAS COM", "%s · DAS COM client area") },
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function LayoutEspace({ children }: { children: React.ReactNode }) {
   const c = await exigerConnexion();
+  const { tr, l } = await i18n();
   const u = c.utilisateur;
 
   return (
@@ -27,12 +31,12 @@ export default async function LayoutEspace({ children }: { children: React.React
           </div>
           <div className="flex items-center gap-3">
             {u.type === "equipe" && (
-              <Link href="/dashboard" className="hidden text-sm text-encre-douce hover:text-encre sm:block">
+              <a href="/dashboard" className="hidden text-sm text-encre-douce hover:text-encre sm:block">
                 Dashboard
-              </Link>
+              </a>
             )}
-            <LienBouton href="/commander" taille="sm" className="hidden sm:inline-flex">
-              Demander un devis
+            <LienBouton href={l("/commander")} taille="sm" className="hidden sm:inline-flex">
+              {tr("Demander un devis", "Get a quote")}
             </LienBouton>
             {u.image ? (
               <Image src={u.image} alt="" width={32} height={32} className="size-8 rounded-full" unoptimized />
@@ -45,8 +49,8 @@ export default async function LayoutEspace({ children }: { children: React.React
               <button
                 type="submit"
                 className="rounded-md p-1.5 text-encre-muette hover:bg-fond hover:text-encre"
-                aria-label="Se déconnecter"
-                title="Se déconnecter"
+                aria-label={tr("Se déconnecter", "Sign out")}
+                title={tr("Se déconnecter", "Sign out")}
               >
                 <LogOut className="size-4" />
               </button>

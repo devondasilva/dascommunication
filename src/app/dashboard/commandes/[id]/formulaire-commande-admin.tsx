@@ -28,10 +28,10 @@ export function FormulaireCommandeAdmin({ commande, montants = true }: { command
 
       {montants && (
       <Champ
-        label="Montant facturé"
+        label={`Montant facturé (${commande.devise === "USD" ? "dollars US" : "F CFA"})`}
         name="montant"
         inputMode="numeric"
-        placeholder="ex. 250000"
+        placeholder={commande.devise === "USD" ? "ex. 450" : "ex. 250000"}
         defaultValue={v.montant ?? (commande.montant != null ? String(commande.montant) : "")}
         key={`m-${commande.montant}`}
         erreur={etat.erreurs?.montant}
@@ -46,7 +46,11 @@ export function FormulaireCommandeAdmin({ commande, montants = true }: { command
         placeholder="ex. Première version envoyée par e-mail."
         defaultValue={v.messageClient}
         erreur={etat.erreurs?.messageClient}
-        aide="Optionnel — ajouté à l'historique visible par le client."
+        aide={
+          commande.langue === "en"
+            ? "Client anglophone : écrivez votre message en anglais. Ajouté à l'historique visible par le client."
+            : "Optionnel — ajouté à l'historique visible par le client."
+        }
       />
 
       <ZoneTexte

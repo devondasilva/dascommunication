@@ -103,6 +103,7 @@ export default async function PageRealisationsAdmin({ searchParams }: PageProps<
                 <div className="p-4">
                   <p className="text-xs text-encre-muette">
                     {LIBELLES_REALISATION[r.categorie]}, {pluriel(r.nbVisuels, "visuel")}
+                    {!r.titreEn && <span className="text-amber-800">, anglais à compléter</span>}
                   </p>
                   <h2 className="mt-1 line-clamp-2 font-medium text-encre">
                     <Link href={`/dashboard/realisations/${r.id}`} className="after:absolute after:inset-0 hover:underline">

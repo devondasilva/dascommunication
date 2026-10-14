@@ -31,6 +31,16 @@ export function FormulaireParametres({ parametres: p }: { parametres: Parametres
             erreur={e.whatsapp}
           />
           <Champ label="Présence" name="presence" placeholder="Maryland, Virginie et Bénin" defaultValue={v("presence")} erreur={e.presence} />
+          <div className="sm:col-start-2">
+            <Champ
+              label="Présence (anglais)"
+              name="presenceEn"
+              lang="en"
+              placeholder="Maryland, Virginia and Benin"
+              defaultValue={v("presenceEn")}
+              erreur={e.presenceEn}
+            />
+          </div>
         </div>
       </Carte>
 
@@ -46,17 +56,53 @@ export function FormulaireParametres({ parametres: p }: { parametres: Parametres
 
       <Carte className="space-y-4 p-6">
         <h2 className="text-lg font-semibold text-encre">Bannière « devis »</h2>
-        <p className="-mt-2 text-sm text-encre-muette">Affichée sur l&apos;accueil et en haut de la page Services.</p>
-        <Champ label="Accroche" name="banniereAccroche" defaultValue={v("banniereAccroche")} erreur={e.banniereAccroche} />
-        <Champ label="Titre" name="banniereTitre" requis defaultValue={v("banniereTitre")} erreur={e.banniereTitre} />
-        <ZoneTexte
-          label="Arguments"
-          name="banniereArguments"
-          rows={3}
-          aide="Un argument par ligne (3 conseillés)."
-          defaultValue={v("banniereArguments")}
-          erreur={e.banniereArguments}
-        />
+        <p className="-mt-2 text-sm text-encre-muette">
+          Affichée sur l&apos;accueil et en haut de la page Services, en français et sur le site anglais.
+        </p>
+        <div className="grid gap-x-6 gap-y-4 md:grid-cols-2">
+          <p className="text-xs font-semibold tracking-wide text-encre-muette uppercase">Français</p>
+          <p className="hidden text-xs font-semibold tracking-wide text-encre-muette uppercase md:block">English</p>
+          <Champ label="Accroche" name="banniereAccroche" defaultValue={v("banniereAccroche")} erreur={e.banniereAccroche} />
+          <Champ label="Tagline" name="banniereAccrocheEn" lang="en" defaultValue={v("banniereAccrocheEn")} erreur={e.banniereAccrocheEn} />
+          <Champ label="Titre" name="banniereTitre" requis defaultValue={v("banniereTitre")} erreur={e.banniereTitre} />
+          <Champ label="Title" name="banniereTitreEn" lang="en" defaultValue={v("banniereTitreEn")} erreur={e.banniereTitreEn} />
+          <ZoneTexte
+            label="Arguments"
+            name="banniereArguments"
+            rows={3}
+            aide="Un argument par ligne (3 conseillés)."
+            defaultValue={v("banniereArguments")}
+            erreur={e.banniereArguments}
+          />
+          <ZoneTexte
+            label="Selling points"
+            name="banniereArgumentsEn"
+            lang="en"
+            rows={3}
+            aide="One per line. Empty = French text."
+            defaultValue={v("banniereArgumentsEn")}
+            erreur={e.banniereArgumentsEn}
+          />
+        </div>
+      </Carte>
+
+      <Carte id="devises" className="scroll-mt-24 space-y-4 p-6">
+        <h2 className="text-lg font-semibold text-encre">Prix en dollars</h2>
+        <p className="-mt-2 text-sm text-encre-muette">
+          Les visiteurs choisissent d&apos;afficher les prix en F CFA ou en dollars (dollars par défaut sur le site anglais).
+          Pour les services sans prix en dollars saisi dans Tarifs, le prix est converti avec ce taux puis arrondi.
+        </p>
+        <div className="max-w-xs">
+          <Champ
+            label="Taux de conversion"
+            name="tauxUsd"
+            inputMode="decimal"
+            requis
+            aide="Nombre de F CFA pour 1 dollar US."
+            defaultValue={v("tauxUsd")}
+            erreur={e.tauxUsd}
+          />
+        </div>
       </Carte>
 
       <BoutonEnvoi enCours="Enregistrement…">Enregistrer les paramètres</BoutonEnvoi>
