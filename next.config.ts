@@ -5,9 +5,17 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@electric-sql/pglite"],
   images: {
     // Photos de profil Google des clients
-    remotePatterns: [{ protocol: "https", hostname: "lh3.googleusercontent.com" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
+      // Visuels envoyés depuis le dashboard (Vercel Blob)
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+    ],
   },
   poweredByHeader: false,
+  experimental: {
+    // Envoi des visuels : une image (déjà compressée par le navigateur) par requête
+    serverActions: { bodySizeLimit: "6mb" },
+  },
   async headers() {
     return [
       {

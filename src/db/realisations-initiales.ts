@@ -1,22 +1,13 @@
 /**
- * Portfolio DAS Communication (repris du site das-communication).
- * Images optimisées dans /public/realisations.
- * Pour ajouter une réalisation : déposez l'image dans /public/realisations
- * puis ajoutez une entrée ci-dessous.
+ * Portfolio initial de DAS Communication (repris de l'ancien site).
+ * Importé une seule fois dans la base au premier démarrage ; ensuite,
+ * tout se gère depuis le dashboard (Réalisations).
  */
+import type { CategorieRealisation } from "@/lib/enums";
 
-export const CATEGORIES_REALISATION = {
-  logos: "Logos",
-  web: "Web & applications",
-  visuels: "Visuels & supports",
-  edition: "Édition",
-} as const;
+type ImageInitiale = { src: string; largeur: number; hauteur: number; alt: string };
 
-export type CategorieRealisation = keyof typeof CATEGORIES_REALISATION;
-
-export type ImageRealisation = { src: string; largeur: number; hauteur: number; alt: string };
-
-export type Realisation = {
+type RealisationInitiale = {
   slug: string;
   titre: string;
   categorie: CategorieRealisation;
@@ -26,11 +17,11 @@ export type Realisation = {
   lien?: string;
   tags: string[];
   misEnAvant?: boolean;
-  image: ImageRealisation;
-  galerie?: ImageRealisation[];
+  image: ImageInitiale;
+  galerie?: ImageInitiale[];
 };
 
-export const REALISATIONS: Realisation[] = [
+export const REALISATIONS_INITIALES: RealisationInitiale[] = [
   {
     "slug": "identite-visuelle-das-com",
     "titre": "Identité visuelle DAS COM",
@@ -694,6 +685,3 @@ export const REALISATIONS: Realisation[] = [
     ]
   }
 ];
-
-export const realisationsMisesEnAvant = () => REALISATIONS.filter((r) => r.misEnAvant);
-export const realisationParSlug = (slug: string) => REALISATIONS.find((r) => r.slug === slug);

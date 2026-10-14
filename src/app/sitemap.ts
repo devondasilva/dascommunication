@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
-import { REALISATIONS } from "@/data/realisations";
 import { SITE } from "@/lib/constantes";
-import { servicesActifs } from "@/lib/donnees";
+import { realisationsPubliees, servicesActifs } from "@/lib/donnees";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = SITE.url.replace(/\/$/, "");
@@ -12,13 +11,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   let services: MetadataRoute.Sitemap = [];
+  let realisations: MetadataRoute.Sitemap = [];
   try {
     services = (await servicesActifs()).map((s) => ({ url: `${base}/services/${s.slug}`, priority: 0.7 }));
+    realisations = (await realisationsPubliees()).map((r) => ({
+      url: `${base}/realisations/${r.slug}`,
+      lastModified: r.majLe,
+      priority: 0.6,
+    }));
   } catch {
-    // Base indisponible : le sitemap reste valide sans les fiches services
+    // Base indisponible : le sitemap reste valide avec les pages principales
   }
-
-  const realisations = REALISATIONS.map((r) => ({ url: `${base}/realisations/${r.slug}`, priority: 0.6 }));
 
   return [...pages, ...services, ...realisations];
 }

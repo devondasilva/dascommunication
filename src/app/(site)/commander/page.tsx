@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { CircleCheck, Clock, ShieldCheck } from "lucide-react";
-import { LIBELLES_CATEGORIE, SITE } from "@/lib/constantes";
+import { LIBELLES_CATEGORIE } from "@/lib/constantes";
 import { utilisateurConnecte } from "@/lib/auth";
+import { parametresSite } from "@/lib/parametres";
 import { servicesActifs } from "@/lib/donnees";
 import { formaterMontant } from "@/lib/format";
 import { FormulaireCommande } from "./formulaire-commande";
@@ -19,7 +20,7 @@ const GARANTIES = [
 
 export default async function PageCommander({ searchParams }: PageProps<"/commander">) {
   const { service: slug } = await searchParams;
-  const [services, connecte] = await Promise.all([servicesActifs(), utilisateurConnecte()]);
+  const [services, connecte, parametres] = await Promise.all([servicesActifs(), utilisateurConnecte(), parametresSite()]);
   const initial = services.find((s) => s.slug === slug)?.id;
 
   return (
@@ -56,8 +57,8 @@ export default async function PageCommander({ searchParams }: PageProps<"/comman
           </ul>
           <p className="mt-6 px-1 text-sm text-encre-muette">
             Une question avant de commander ?<br />
-            <a href={`mailto:${SITE.email}`} className="font-medium text-marque-texte hover:underline">
-              {SITE.email}
+            <a href={`mailto:${parametres.email}`} className="font-medium text-marque-texte hover:underline">
+              {parametres.email}
             </a>
           </p>
         </aside>

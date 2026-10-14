@@ -20,9 +20,14 @@ export default async function PageServicesAdmin() {
         titre="Services"
         description="Le catalogue affiché sur le site. Un service masqué ne peut plus être commandé."
         actions={
-          <LienBouton href="/dashboard/services/nouveau" taille="sm">
-            <Plus aria-hidden className="size-4" /> Nouveau service
-          </LienBouton>
+          <>
+            <LienBouton href="/dashboard/tarifs" taille="sm" variante="secondaire">
+              Modifier les tarifs
+            </LienBouton>
+            <LienBouton href="/dashboard/services/nouveau" taille="sm">
+              <Plus aria-hidden className="size-4" /> Nouveau service
+            </LienBouton>
+          </>
         }
       />
 

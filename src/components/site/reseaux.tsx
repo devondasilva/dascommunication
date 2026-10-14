@@ -15,13 +15,18 @@ const ICONES = {
 
 const NOMS = { linkedin: "LinkedIn", instagram: "Instagram", facebook: "Facebook" } as const;
 
-export function Reseaux({ clair = false }: { clair?: boolean }) {
+type Liens = Partial<Record<keyof typeof NOMS, string>>;
+
+/** Icônes des réseaux sociaux renseignés dans Dashboard → Paramètres (les liens vides sont masqués). */
+export function Reseaux({ liens, clair = false }: { liens: Liens; clair?: boolean }) {
+  const presents = (Object.keys(NOMS) as (keyof typeof NOMS)[]).filter((r) => liens[r]);
+  if (presents.length === 0) return null;
   return (
     <ul className="flex gap-2">
-      {(Object.keys(SITE.reseaux) as (keyof typeof SITE.reseaux)[]).map((r) => (
+      {presents.map((r) => (
         <li key={r}>
           <a
-            href={SITE.reseaux[r]}
+            href={liens[r]}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${SITE.nom} sur ${NOMS[r]}`}

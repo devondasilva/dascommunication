@@ -33,3 +33,7 @@ export type Priorite = (typeof PRIORITES)[number];
 /** client : connexion Google · equipe : membre DAS COM avec un rôle */
 export const TYPES_UTILISATEUR = ["client", "equipe"] as const;
 export type TypeUtilisateur = (typeof TYPES_UTILISATEUR)[number];
+
+/** Catégories du portfolio (réalisations) */
+export const CATEGORIES_REALISATION = ["logos", "web", "visuels", "edition"] as const;
+export type CategorieRealisation = (typeof CATEGORIES_REALISATION)[number];

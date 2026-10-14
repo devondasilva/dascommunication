@@ -32,5 +32,17 @@ export const MIGRATIONS: { nom: string; requetes: string[] }[] = [
       "CREATE UNIQUE INDEX \"utilisateurs_google_idx\" ON \"utilisateurs\" USING btree (\"google_id\");",
       "CREATE INDEX \"utilisateurs_type_idx\" ON \"utilisateurs\" USING btree (\"type\");"
     ]
+  },
+  {
+    "nom": "0001_portfolio_parametres",
+    "requetes": [
+      "CREATE TABLE \"parametres\" (\n\t\"cle\" text PRIMARY KEY NOT NULL,\n\t\"valeur\" text NOT NULL,\n\t\"maj_le\" timestamp with time zone DEFAULT now() NOT NULL\n);",
+      "CREATE TABLE \"realisations\" (\n\t\"id\" serial PRIMARY KEY NOT NULL,\n\t\"slug\" text NOT NULL,\n\t\"titre\" text NOT NULL,\n\t\"categorie\" text NOT NULL,\n\t\"description\" text,\n\t\"client\" text,\n\t\"secteur\" text,\n\t\"lien\" text,\n\t\"tags\" text[] DEFAULT '{}'::text[] NOT NULL,\n\t\"mis_en_avant\" boolean DEFAULT false NOT NULL,\n\t\"publie\" boolean DEFAULT true NOT NULL,\n\t\"ordre\" integer DEFAULT 0 NOT NULL,\n\t\"cree_le\" timestamp with time zone DEFAULT now() NOT NULL,\n\t\"maj_le\" timestamp with time zone DEFAULT now() NOT NULL,\n\tCONSTRAINT \"realisations_slug_unique\" UNIQUE(\"slug\")\n);",
+      "CREATE TABLE \"visuels\" (\n\t\"id\" serial PRIMARY KEY NOT NULL,\n\t\"realisation_id\" integer NOT NULL,\n\t\"url\" text NOT NULL,\n\t\"largeur\" integer NOT NULL,\n\t\"hauteur\" integer NOT NULL,\n\t\"alt\" text DEFAULT '' NOT NULL,\n\t\"ordre\" integer DEFAULT 0 NOT NULL,\n\t\"televerse\" boolean DEFAULT false NOT NULL,\n\t\"cree_le\" timestamp with time zone DEFAULT now() NOT NULL\n);",
+      "ALTER TABLE \"visuels\" ADD CONSTRAINT \"visuels_realisation_id_realisations_id_fk\" FOREIGN KEY (\"realisation_id\") REFERENCES \"public\".\"realisations\"(\"id\") ON DELETE cascade ON UPDATE no action;",
+      "CREATE INDEX \"realisations_categorie_idx\" ON \"realisations\" USING btree (\"categorie\");",
+      "CREATE INDEX \"realisations_ordre_idx\" ON \"realisations\" USING btree (\"ordre\");",
+      "CREATE INDEX \"visuels_realisation_idx\" ON \"visuels\" USING btree (\"realisation_id\",\"ordre\");"
+    ]
   }
 ];

@@ -49,3 +49,6 @@ next-env.d.ts
 
 # base PGlite locale (mode démo)
 .pglite
+
+# images envoyées depuis le dashboard (stockage local)
+.fichiers

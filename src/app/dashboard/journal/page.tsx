@@ -31,6 +31,17 @@ const ACTIONS: Record<string, string> = {
   "compte.mot_de_passe_change": "Mot de passe changé",
   "compte.2fa_activee": "Double authentification activée",
   "compte.2fa_desactivee": "Double authentification désactivée",
+  "realisation.creee": "Réalisation créée",
+  "realisation.modifiee": "Réalisation modifiée",
+  "realisation.supprimee": "Réalisation supprimée",
+  "realisation.publiee": "Réalisation publiée",
+  "realisation.masquee": "Réalisation masquée",
+  "realisation.mise_en_avant": "Réalisation mise sur l'accueil",
+  "realisation.retiree_accueil": "Réalisation retirée de l'accueil",
+  "visuel.ajoute": "Visuel ajouté",
+  "visuel.supprime": "Visuel supprimé",
+  "tarifs.modifies": "Tarifs modifiés",
+  "parametres.modifies": "Paramètres du site modifiés",
 };
 
 export default async function PageJournal() {

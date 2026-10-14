@@ -3,9 +3,8 @@ import { BanniereDevis } from "@/components/site/banniere-devis";
 import { CarteRealisation } from "@/components/site/carte-realisation";
 import { CarteService } from "@/components/site/carte-service";
 import { MurAffiches } from "@/components/site/mur-affiches";
-import { realisationsMisesEnAvant } from "@/data/realisations";
 import { CATEGORIES_SERVICE } from "@/lib/enums";
-import { idsServicesPopulaires, servicesActifs } from "@/lib/donnees";
+import { idsServicesPopulaires, realisationsPubliees, servicesActifs } from "@/lib/donnees";
 
 const ETAPES = [
   { titre: "Vous décrivez votre besoin", texte: "En ligne, en quelques minutes, depuis votre espace client." },
@@ -15,8 +14,12 @@ const ETAPES = [
 ];
 
 export default async function Accueil() {
-  const [services, populaires] = await Promise.all([servicesActifs(), idsServicesPopulaires()]);
-  const vitrine = realisationsMisesEnAvant().slice(0, 6);
+  const [services, populaires, misesEnAvant] = await Promise.all([
+    servicesActifs(),
+    idsServicesPopulaires(),
+    realisationsPubliees({ misEnAvant: true }),
+  ]);
+  const vitrine = misesEnAvant.slice(0, 6);
   // Un service par domaine, en commençant par le plus demandé s'il y en a un
   const vedettes = CATEGORIES_SERVICE.map(
     (cat) =>
